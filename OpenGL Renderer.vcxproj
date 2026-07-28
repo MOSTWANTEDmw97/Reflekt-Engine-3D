@@ -183,8 +183,9 @@
     <ClInclude Include="Headers\VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Default_Fragment.glsl" />
-    <None Include="Shaders\Default_Vertex.glsl" />
+    <None Include="Shaders\Default.frag.glsl" />
+    <None Include="Shaders\Default.vert.glsl" />
+    <None Include="Shaders\LightSource.frag.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

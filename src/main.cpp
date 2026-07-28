@@ -13,8 +13,6 @@
 #include"Texture.h"
 #include"Camera.h"
 
-
-
 float screenWidth = 1920;
 float screenHeight = 1080;
 //OpenGL 4.6.0
@@ -58,19 +56,21 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	Texture brick("Assets/Textures/StoneBrick.jpg", GL_RGB);
+	Texture leaf("Assets/Textures/Leaf.jpeg", GL_RGB);
 
-	Shader shader("Shaders/Default_Vertex.glsl", "Shaders/Default_Fragment.glsl");
+	Shader shader("Shaders/Default.vert.glsl", "Shaders/Default.frag.glsl");
+	Shader lightShader("Shaders/Default.vert.glsl", "Shaders/LightSource.frag.glsl");
 
 	// Base (square, centered at origin, y = 0)
 	GLfloat pyramidVertices[] = {
 		// positions           // colors       // texcoords
-		-0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,  0.0f, 0.0f, // back-left
-		 0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // back-right
-		 0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,  1.0f, 1.0f, // front-right
-		-0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 0.0f,  0.0f, 1.0f, // front-left
+		-0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // back-left
+		 0.5f, -0.5f, -0.5f,    1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // back-right
+		 0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // front-right
+		-0.5f, -0.5f,  0.5f,    1.0f, 1.0f, 1.0f,  0.0f, 1.0f, // front-left
 
 		// Apex (top point)
-		 0.0f, 0.8f,  0.0f,    1.0f, 0.0f, 1.0f,  0.5f, 0.5f  // top
+		 0.0f, 0.8f,  0.0f,    1.0f, 1.0f, 1.0f,  0.5f, 0.5f  // top
 	};
 	GLuint pyramidIndices[] = {
 		// Base (two triangles)
@@ -84,22 +84,92 @@ int main()
 		3, 0, 4  // left face
 	};
 
+	float planeVertices[] = {
+		// positions          // colors         // texCoords
+		-1.0f, -0.51f, -1.0f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f, // bottom-left
+		 1.0f, -0.51f, -1.0f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f, // bottom-right
+		 1.0f, -0.51f,  1.0f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f, // top-right
+		-1.0f, -0.51f,  1.0f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f  // top-left
+	};
+
+	unsigned int planeIndices[] = {
+		0, 1, 2,   // first triangle
+		2, 3, 0    // second triangle
+	};
+
+	GLfloat cubeVertices[] = {
+		// positions          // colors         // texCoords
+		// Front face
+		-0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+
+		// Back face
+		-0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+
+		// Left face
+		-0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+
+		// Right face
+		 0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+
+		 // Top face
+		 -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		  0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		  0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		 -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+
+		 // Bottom face
+		 -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		  0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		  0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  1.0f, 1.0f,
+		 -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,  0.0f, 1.0f
+	};
+	GLuint cubeIndices[] = {
+		// Front
+		0, 1, 2, 2, 3, 0,
+		// Back
+		4, 5, 6, 6, 7, 4,
+		// Left
+		8, 9,10,10,11, 8,
+		// Right
+		12,13,14,14,15,12,
+		// Top
+		16,17,18,18,19,16,
+		// Bottom
+		20,21,22,22,23,20
+	};
+
+
 
 	
 	Mesh pyramid(pyramidVertices, sizeof(pyramidVertices), pyramidIndices, sizeof(pyramidIndices), GL_STATIC_DRAW);
-	shader.Use();
-	glUniform1i(glGetUniformLocation(shader.ID, "tex0"), 0);
+	Mesh plane(planeVertices, sizeof(planeVertices), planeIndices, sizeof(planeIndices), GL_STATIC_DRAW);
+	Mesh otherCube(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices), GL_STATIC_DRAW);
+	Mesh cube(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices), GL_STATIC_DRAW);
+	//shader.Use();
+	//glUniform1i(glGetUniformLocation(shader.ID, "tex0"), 0);
 
-	//GLuint transformLoc = glGetUniformLocation(shader.ID, "model");
 
 	glm::vec3 camera_Pos = glm::vec3(0.0f, 0.0f, 3.0f);
 	float fov = 60.0f;
-	float clipNear = 0.1f;
+	float clipNear = 0.01f;
 	float clipFar = 100.0f;
-
 
 	Camera camera(camera_Pos, fov, clipNear, clipFar);
 	camera.SetSpeed(1.0f);
+
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 0.7f);
 
 	glEnable(GL_DEPTH_TEST);
 	std::cout << glGetString(GL_VERSION) << std::endl;
@@ -113,17 +183,34 @@ int main()
 
 		ProcessInput(window, camera, deltaTime);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.0f, 0.5f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 		shader.Use();
-		brick.Bind();
+		shader.SetVec3("lightColor", lightColor);
+		shader.SetFloat("ambientStrength", glm::abs(sin((glfwGetTime() / 5)))+ 0.25f);
 
 
 		glm::mat4 model = glm::mat4(1.0f);
-		camera.BindToShader(shader, model, 800.0f / 600.0f);
+		camera.BindToShader(shader, model, screenWidth / screenHeight);
+		leaf.Bind();
 
+		plane.Draw();
+		leaf.Unbind();
+		brick.Bind();
 		pyramid.Draw();
+		otherCube.Draw();
+		brick.Unbind();
+
+		lightShader.Use();
+		glm::mat4 lightModel = glm::mat4(1.0f);
+		lightModel = glm::translate(lightModel, glm::vec3(3.0f, 5.0f, 2.0f));
+		lightModel = glm::scale(lightModel, glm::vec3(0.2f));
+		camera.BindToShader(lightShader, lightModel, screenWidth / screenHeight);
+		lightShader.SetVec3("lightColor", lightColor);
+		cube.Draw();
+
+
 
 
 
@@ -131,6 +218,7 @@ int main()
 		glfwPollEvents();
 	}
 	pyramid.Delete();
+	brick.Delete();
 	shader.Delete();
 	
 	glfwTerminate();
@@ -165,7 +253,6 @@ void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime)
 		enableCameraLook = !enableCameraLook;
 	}
 	Mouse_callback(window, camera, screenWidth, screenHeight, enableCameraLook);
-
 }
 
 void Mouse_callback(GLFWwindow* window, Camera& camera, float window_Width, float window_Height, bool enableCameraLook)

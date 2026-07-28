@@ -67,11 +67,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Default_Fragment.glsl">
+    <None Include="Shaders\Default.frag.glsl">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="Shaders\Default_Vertex.glsl">
+    <None Include="Shaders\Default.vert.glsl">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="Shaders\LightSource.frag.glsl" />
   </ItemGroup>
 </Project>
