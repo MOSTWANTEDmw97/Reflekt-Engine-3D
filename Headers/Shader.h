@@ -2,8 +2,10 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include<iostream>
 #include<string>
 #include<glad/glad.h>
+#include<glm.hpp>
 
 class Shader
 {
@@ -16,6 +18,8 @@ class Shader
 		// Activate
 		void Use();
 		void Delete();
+
+		void SetMat4(const std::string& name, const glm::mat4& mat) const;
 
 		// utils
 		void SetBool(const std::string& name, bool value) const;

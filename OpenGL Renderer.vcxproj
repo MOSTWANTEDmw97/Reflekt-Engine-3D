@@ -89,7 +89,7 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\"</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,7 +113,7 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\"</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -135,7 +135,7 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\"</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,10 +159,11 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\"</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\EBO.h" />
     <ClInclude Include="Headers\Mesh.h" />
     <ClInclude Include="Headers\Shader.h" />

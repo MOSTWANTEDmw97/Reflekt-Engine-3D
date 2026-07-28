@@ -1,4 +1,5 @@
 #include"Mesh.h"
+#include<iostream>
 
 Mesh::Mesh(const GLfloat* vertices, GLsizeiptr vertSize, const GLuint* indices, GLsizeiptr indicesSize, GLenum drawType)
 {
@@ -19,6 +20,7 @@ void Mesh::Draw()
 {
 	vao.Bind();
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+	//std::cout << "Index: " <<indexCount<< std::endl;
 	vao.Unbind();
 }
 

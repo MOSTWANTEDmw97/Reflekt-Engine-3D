@@ -2,6 +2,7 @@
 #include<fstream>
 #include<sstream>
 #include<filesystem>
+#include<gtc/type_ptr.hpp>
 #include"Shader.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
@@ -41,12 +42,18 @@ void Shader::Use()
 {
 	glUseProgram(ID);
 }
-
 void Shader::Delete()
 {
 	glDeleteProgram(ID);
 }
 
+// Camera Matrix
+void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+}
+
+// Utils
 void Shader::SetBool(const std::string& name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
@@ -60,6 +67,7 @@ void Shader::SetFloat(const std::string& name, float value) const
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+// Private, Shader load and compile error report
 std::string Shader::LoadShaderSource(const char* shaderPath)
 {
 	std::filesystem::path exePath = std::filesystem::current_path();
