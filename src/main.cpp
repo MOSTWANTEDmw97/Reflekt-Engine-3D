@@ -16,6 +16,7 @@
 #include"PointLight.h"
 #include"SpotLight.h"
 
+//To do implement vec4 in shaders std430
 float screenWidth = 960;
 float screenHeight = 540;
 //OpenGL 4.6.0
