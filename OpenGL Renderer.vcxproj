@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -164,20 +164,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\DirectionalLight.cpp" />
+    <ClCompile Include="src\DirectionalLightManager.cpp" />
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\PointLight.cpp" />
+    <ClCompile Include="src\PointLightManager.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\SpotLight.cpp" />
+    <ClCompile Include="src\SpotLightManager.cpp" />
+    <ClCompile Include="src\SSBO.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VAO.cpp" />
     <ClCompile Include="src\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
+    <ClInclude Include="Headers\DirectionalLight.h" />
     <ClInclude Include="Headers\EBO.h" />
     <ClInclude Include="Headers\Mesh.h" />
+    <ClInclude Include="Headers\PointLight.h" />
+    <ClInclude Include="Headers\PointLightManager.h" />
     <ClInclude Include="Headers\Shader.h" />
+    <ClInclude Include="Headers\SpotLight.h" />
+    <ClInclude Include="Headers\SpotLightManager.h" />
+    <ClInclude Include="Headers\SSBO.h" />
     <ClInclude Include="Headers\Texture.h" />
     <ClInclude Include="Headers\VAO.h" />
     <ClInclude Include="Headers\VBO.h" />

@@ -12,15 +12,56 @@
 #include"Mesh.h"
 #include"Texture.h"
 #include"Camera.h"
+#include"DirectionalLight.h"
+#include"PointLight.h"
+#include"SpotLight.h"
 
-float screenWidth = 1920;
-float screenHeight = 1080;
+float screenWidth = 960;
+float screenHeight = 540;
 //OpenGL 4.6.0
 //GLFW 3.3
 // Function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime);
 void Mouse_callback(GLFWwindow* window, Camera& camera, float window_Width, float window_Height, bool enableCameraLook);
+
+
+struct Material
+{
+	Texture diffuse;
+	Texture specular;
+	float shininess;
+
+	void Apply(Shader& shader)
+	{
+		diffuse.TextureSlot(GL_TEXTURE0);
+		diffuse.Bind();
+		shader.SetInt("material.diffuse", 0);
+
+		specular.TextureSlot(GL_TEXTURE1);
+		specular.Bind();
+		shader.SetInt("material.specular", 1);
+
+		shader.SetFloat("material.shininess", shininess);
+
+	}
+};
+struct Light
+{
+	glm::vec3 direction;   // world-space position
+	glm::vec3 ambient;    // ambient intensity
+	glm::vec3 diffuse;    // diffuse intensity
+	glm::vec3 specular;   // specular intensity
+
+	void Apply(Shader& shader, const std::string& name) const
+	{
+		shader.SetVec3(name + ".position", direction);
+		shader.SetVec3(name + ".ambient", ambient);
+		shader.SetVec3(name + ".diffuse", diffuse);
+		shader.SetVec3(name + ".specular", specular);
+	}
+};
+
 
 int main()
 {
@@ -56,6 +97,10 @@ int main()
 
 	Texture brick("Assets/Textures/StoneBrick.jpg", GL_RGB);
 	Texture leaf("Assets/Textures/Leaf.jpeg", GL_RGB);
+	Texture container_Diffuse("Assets/Textures/Container.png", GL_RGBA);
+	Texture container_Spec("Assets/Textures/Container_Specular.png", GL_RGBA);
+	Texture board_Diffuse("Assets/Textures/CheckerBoard.jpg", GL_RGB);
+
 
 	Shader shader("Shaders/Default.vert.glsl", "Shaders/Default.frag.glsl");
 	Shader lightShader("Shaders/Default.vert.glsl", "Shaders/LightSource.frag.glsl");
@@ -124,6 +169,8 @@ int main()
 		// Bottom
 		20,21,22,22,23,20
 	};
+
+	Material iron{container_Diffuse, container_Spec, 128.0f};
 	
 	Mesh plane(planeVertices, sizeof(planeVertices), planeIndices, sizeof(planeIndices), GL_STATIC_DRAW);
 	Mesh otherCube(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices), GL_STATIC_DRAW);
@@ -138,8 +185,33 @@ int main()
 	camera.SetSpeed(1.0f);
 
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	glm::vec3 lightPos = glm::vec3(3.0f, 3.0f, 0.0f);
+	glm::vec3 lightPos = glm::vec3(1.0f, 0.0f, 0.5f);
+	glm::vec3 lightDir = glm::vec3(1.0f, 0.45f, 0.25f);
 
+	
+	DirectionalLightManager directionalLights(0);
+	PointLightManager pointLights(1);
+	SpotLightManager spotLights(2);
+
+
+	//directionalLights.Upload();
+	//pointLights.Upload();
+	//spotLights.Upload();
+	//PointLight lamp(PointLightManager, lightPos, glm::vec3(0.5f), 
+	glm::vec3 pos = glm::vec3(1.5f, 1.0f, 1.0f);
+	glm::vec3 amb = glm::vec3(0.2f);
+	glm::vec3 diff = glm::vec3(0.8f);
+	glm::vec3 spec = glm::vec3(1.0f);
+	float cons = 1.0f;
+	float lin = 1.7f;
+	float quad = 0.034f;
+	
+	PointLight light(pointLights, pos, amb, diff, spec, cons, lin, quad);
+	
+	//DirectionalLight globalLight(directionalLights,glm::vec3(0.5f, -1.0f, -0.25f), glm::vec3(0.1f), glm::vec3(0.25f), glm::vec3(1.0f));
+
+	//SpotLight torch(spotLights, camera_Pos, camera.Forward, glm::vec3(0.1f), glm::vec3(0.5f), glm::vec3(1.0f), 18.0f, 18.5f, 1.0f, 0.5f, 0.1f);
+	
 	glEnable(GL_DEPTH_TEST);
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
@@ -152,38 +224,30 @@ int main()
 
 		ProcessInput(window, camera, deltaTime);
 
-		glClearColor(0.0f, 0.05f, 0.1f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		glm::vec3 updateLightPos = lightPos;
-		updateLightPos.x = 1.0f + sin(glfwGetTime()) * 5.0f;
-		updateLightPos.y = sin(glfwGetTime() / 2.0f) * 2.0f;
+		glm::vec3 updateLightPos = glm::vec3(0.0f);
+		updateLightPos.x = 1.0f * cos(glfwGetTime());
+		updateLightPos.z = 1.0f * sin(glfwGetTime());
 
 		shader.Use();
 		shader.SetVec3("viewPos", camera.Position);
-		shader.SetVec3("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-		shader.SetVec3("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-		shader.SetVec3("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
-		shader.SetFloat("material.shininess", 32.0f);
-		shader.SetVec3("light.position", lightPos);
-		shader.SetVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-		shader.SetVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-		shader.SetVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
+		iron.Apply(shader);
+		//lamp.Apply(shader, "directionalLight");shader.SetVec3("pointLight.position", glm::vec3(0.0f, 1.0f, 0.0f));
+		light.SetPosition(updateLightPos);
+		//torch.SetPosition(camera.Position);
+		//torch.SetDirection(glm::normalize(camera.Forward));
 
 		glm::mat4 model = glm::mat4(1.0f);
 		camera.BindToShader(shader, model, screenWidth / screenHeight);
-		leaf.Bind();
 
-		plane.Draw();
-		leaf.Unbind();
-		brick.Bind();
 		otherCube.Draw();
-		brick.Unbind();
+		//plane.Draw();
 
 		lightShader.Use();
 		glm::mat4 lightModel = glm::mat4(1.0f);
-		lightModel = glm::translate(lightModel, lightPos);
+		lightModel = glm::translate(lightModel, updateLightPos);
 		lightModel = glm::scale(lightModel, glm::vec3(0.2f));
 		camera.BindToShader(lightShader, lightModel, screenWidth / screenHeight);
 		lightShader.SetVec3("lightColor", lightColor);
@@ -197,12 +261,17 @@ int main()
 	lightube.Delete();
 	lightShader.Delete();
 	brick.Delete();
+	leaf.Delete();
 	shader.Delete();
+	pointLights.DeleteBuffer();
+	directionalLights.DeleteBuffer();
+	spotLights.DeleteBuffer();
 	
 	glfwTerminate();
 	
 	return 0;
 }
+
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
