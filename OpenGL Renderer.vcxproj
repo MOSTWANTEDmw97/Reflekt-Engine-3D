@@ -77,19 +77,19 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -101,19 +101,19 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,19 +123,19 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,34 +147,36 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Shaders\" "$(OutDir)Shaders\" &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\DirectionalLight.cpp" />
-    <ClCompile Include="src\DirectionalLightManager.cpp" />
+    <ClCompile Include="src\Lighting\DirectionalLight.cpp" />
+    <ClCompile Include="src\Lighting\Light_Managers\DirectionalLightManager.cpp" />
     <ClCompile Include="src\EBO.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\PointLight.cpp" />
-    <ClCompile Include="src\PointLightManager.cpp" />
+    <ClCompile Include="src\Lighting\PointLight.cpp" />
+    <ClCompile Include="src\Lighting\Light_Managers\PointLightManager.cpp" />
+    <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\SpotLight.cpp" />
-    <ClCompile Include="src\SpotLightManager.cpp" />
+    <ClCompile Include="src\Lighting\SpotLight.cpp" />
+    <ClCompile Include="src\Lighting\Light_Managers\SpotLightManager.cpp" />
     <ClCompile Include="src\SSBO.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\VAO.cpp" />
@@ -182,23 +184,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
-    <ClInclude Include="Headers\DirectionalLight.h" />
+    <ClInclude Include="Headers\Lighting\DirectionalLight.h" />
     <ClInclude Include="Headers\EBO.h" />
+    <ClInclude Include="Headers\Lighting\Light_Managers\DirectionalLightManager.h" />
+    <ClInclude Include="Headers\Material.h" />
     <ClInclude Include="Headers\Mesh.h" />
-    <ClInclude Include="Headers\PointLight.h" />
-    <ClInclude Include="Headers\PointLightManager.h" />
+    <ClInclude Include="Headers\Lighting\PointLight.h" />
+    <ClInclude Include="Headers\Lighting\Light_Managers\PointLightManager.h" />
+    <ClInclude Include="Headers\Model.h" />
     <ClInclude Include="Headers\Shader.h" />
-    <ClInclude Include="Headers\SpotLight.h" />
-    <ClInclude Include="Headers\SpotLightManager.h" />
+    <ClInclude Include="Headers\Lighting\SpotLight.h" />
+    <ClInclude Include="Headers\Lighting\Light_Managers\SpotLightManager.h" />
     <ClInclude Include="Headers\SSBO.h" />
     <ClInclude Include="Headers\Texture.h" />
+    <ClInclude Include="Headers\Math\Transform.h" />
     <ClInclude Include="Headers\VAO.h" />
     <ClInclude Include="Headers\VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Default.frag.glsl" />
-    <None Include="Shaders\Default.vert.glsl" />
-    <None Include="Shaders\LightSource.frag.glsl" />
+    <None Include="..\..\..\..\..\Downloads\survival_guitar_backpack.glb" />
+    <None Include="Assets\Shaders\Default.frag.glsl" />
+    <None Include="Assets\Shaders\Default.vert.glsl" />
+    <None Include="Assets\Shaders\LightSource.frag.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

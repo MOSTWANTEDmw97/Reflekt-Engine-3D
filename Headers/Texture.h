@@ -4,6 +4,7 @@
 
 #include<glad/glad.h>
 #include<string>
+#include<assimp/texture.h>
 
 class Texture
 {
@@ -12,14 +13,27 @@ class Texture
 		GLuint Type;
 		GLuint Slot;
 		GLuint PixelType;
+		std::string type; //Usage, diffuse, specular
 
+		//External texture from file
 		Texture(const char* imagePath,
-			GLenum format,
+			const std::string& typeName,
+			GLenum format = GL_RGB,
 			GLenum texType = GL_TEXTURE_2D,
 			GLenum slot = GL_TEXTURE0,
 			GLenum pixelType = GL_UNSIGNED_BYTE,
 			GLenum filterMode = GL_LINEAR,
 			GLenum wrapMode = GL_REPEAT);
+		
+		//Embedded Mesh texture
+		Texture(const aiTexture* aiTex,
+			const std::string& typeName,
+			GLenum texType = GL_TEXTURE_2D,
+			GLenum slot = GL_TEXTURE0,
+			GLenum pixelType = GL_UNSIGNED_BYTE,
+			GLenum filterMode = GL_LINEAR,
+			GLenum wrapMode = GL_REPEAT);
+
 		void Bind();
 		void Unbind();
 		void Delete();

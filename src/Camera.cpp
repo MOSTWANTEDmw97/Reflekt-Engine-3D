@@ -5,33 +5,27 @@
 
 #include"Camera.h"
 
-Camera::Camera(glm::vec3 position, float fov, float clip_Near, float clip_Far)
-	:Forward(glm::vec3(0.0f, 0.0f, -1.0f)),
-	WorldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
-	Yaw(-90.0f), Pitch(0.0f),
-	MovementSpeed(2.5f),
-	MouseSensitivity(0.1f),
-	FOV(fov)
-{
-	Position = position;
-
-	UpdateCameraVectors();
-}
+Camera::Camera(const Transform& t, float fov, float clip_Near, float clip_Far)
+	:transform(t), FOV(fov), Clip_Near(clip_Near), Clip_Far(clip_Far) {}
 
 glm::mat4 Camera::GetViewMatrix() const
 {
-	return glm::lookAt(Position, Position + Forward, Up);
+	//+Z forward
+	return glm::lookAt(
+		transform.position,
+		transform.position + transform.Forward,
+		transform.Up
+	);
 }
 glm::mat4 Camera::GetProjectionMatrix(float aspectRatio) const
 {
-	return glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
+	return glm::perspective(glm::radians(FOV), aspectRatio, Clip_Near, Clip_Far);
 }
 
 void Camera::BindToShader(Shader& shader, const glm::mat4& model, float aspectRatio) const
 {
 	glm::mat4 view = GetViewMatrix();
 	glm::mat4 proj = GetProjectionMatrix(aspectRatio);
-
 	shader.Use();
 	shader.SetMat4("model", model);
 	shader.SetMat4("view", view);
@@ -39,16 +33,13 @@ void Camera::BindToShader(Shader& shader, const glm::mat4& model, float aspectRa
 
 }
 
-void Camera::SetUpDir(glm::vec3 up)
+void Camera::SetPosition(const glm::vec3& pos)
 {
-	WorldUp = up;
-	UpdateCameraVectors();
+	transform.SetPosition(pos);
 }
-void Camera::SetYawPitch(float yaw, float pitch)
+void Camera::SetRotation(const glm::quat& rot)
 {
-	Yaw = yaw;
-	Pitch = pitch;
-	UpdateCameraVectors();
+	transform.SetRotation(rot);
 }
 void Camera::SetFOV(float fov)
 {
@@ -60,51 +51,5 @@ void Camera::SetClipPlanes(float near, float far)
 	Clip_Far = far;
 }
 
-void Camera::SetSpeed(float speed)
-{
-	MovementSpeed = speed;
-}
-void Camera::SetSensitivity(float sensitivity)
-{
-	MouseSensitivity = sensitivity;
-}
-
-
-void Camera::ProcessKeyboardInputs(const char* direction, float deltaTime)
-{
-	float velocity = MovementSpeed * deltaTime;
-	if (strcmp(direction, "FORWARD") == 0) Position += Forward * velocity;
-	if (strcmp(direction, "BACKWARD") == 0) Position -= Forward * velocity;
-	if (strcmp(direction, "LEFT") == 0) Position -= Right * velocity;
-	if (strcmp(direction, "RIGHT") == 0) Position += Right * velocity;
-}
-
-void Camera::ProcessMouseInputs(float xoffset, float yoffset, bool constrainPitch)
-{
-	xoffset *= MouseSensitivity;
-	yoffset *= MouseSensitivity;
-
-	Yaw += xoffset;
-	Pitch += yoffset;
-
-	if (constrainPitch)
-	{
-		if (Pitch > 89.0f) Pitch = 89.0f;
-		if (Pitch < -89.0f) Pitch = -89.0f;
-	}
-
-	UpdateCameraVectors();
-}
-
 // Private
-void Camera::UpdateCameraVectors()
-{
-	glm::vec3 forward;
-	forward.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	forward.y = sin(glm::radians(Pitch));
-	forward.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	Forward = glm::normalize(forward);
 
-	Right = glm::normalize(glm::cross(Forward, WorldUp));
-	Up = glm::normalize(glm::cross(Right, Forward));
-}

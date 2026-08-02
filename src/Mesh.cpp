@@ -1,25 +1,32 @@
 #include"Mesh.h"
 #include<iostream>
 
-Mesh::Mesh(const GLfloat* vertices, GLsizeiptr vertSize, const GLuint* indices, GLsizeiptr indicesSize, GLenum drawType)
+Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, Material mat,GLenum drawType)
+	:vertices(std::move(verts)), indices(std::move(inds)), material(std::move(mat)),
+	indexCount(static_cast<GLsizei>(indices.size()))
 {
-	indexCount = static_cast<GLsizei>(indicesSize / sizeof(GLuint));
 
+	SetupMesh(drawType);
+}
+
+void Mesh::SetupMesh(GLenum drawType)
+{
 	vao.Bind();
-	vbo = new VBO(vertices, vertSize, drawType);
-	ebo = new EBO(indices, indicesSize);
+	vbo = new VBO(vertices.data(), vertices.size() * sizeof(Vertex), drawType);
+	ebo = new EBO(indices.data(), indices.size() * sizeof(unsigned int));
 
-	vao.LinkAttrib(*vbo, 0, 3, GL_FLOAT, 11 * sizeof(float), (void*)0);              // position xyz
-	vao.LinkAttrib(*vbo, 1, 3, GL_FLOAT, 11 * sizeof(float), (void*)(3 * sizeof(float))); // normal xyz
-	vao.LinkAttrib(*vbo, 2, 3, GL_FLOAT, 11 * sizeof(float), (void*)(6 * sizeof(float))); // color rgb
-	vao.LinkAttrib(*vbo, 3, 2, GL_FLOAT, 11 * sizeof(float), (void*)(9 * sizeof(float))); // texcoords uv
-
+	//Link attribs
+	vao.LinkAttrib(*vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	vao.LinkAttrib(*vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	vao.LinkAttrib(*vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, color));
+	vao.LinkAttrib(*vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
 	vao.Unbind();
 }
 
-void Mesh::Draw()
+void Mesh::Draw(Shader& shader)
 {
+	material.Apply(shader);
 	vao.Bind();
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 	//std::cout << "Index: " <<indexCount<< std::endl;
