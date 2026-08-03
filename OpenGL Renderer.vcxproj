@@ -202,7 +202,6 @@
     <ClInclude Include="Headers\VBO.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\Downloads\survival_guitar_backpack.glb" />
     <None Include="Assets\Shaders\Default.frag.glsl" />
     <None Include="Assets\Shaders\Default.vert.glsl" />
     <None Include="Assets\Shaders\LightSource.frag.glsl" />

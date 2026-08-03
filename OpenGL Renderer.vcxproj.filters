@@ -131,6 +131,5 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="Assets\Shaders\LightSource.frag.glsl" />
-    <None Include="..\..\..\..\..\Downloads\survival_guitar_backpack.glb" />
   </ItemGroup>
 </Project>

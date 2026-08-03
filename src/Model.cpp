@@ -37,7 +37,7 @@ void Model::LoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
-		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals  | aiProcess_PreTransformVertices);
+		aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices);
 
 	if (scene)
 	{
@@ -50,27 +50,26 @@ void Model::LoadModel(const std::string& path)
 		return;
 	}
 
-	ProcessNode(scene->mRootNode, scene);
+	ProcessNode(scene->mRootNode, scene, glm::mat4(1.0f));
 }
 
-
-
-
-void Model::ProcessNode(aiNode* node, const aiScene* scene)
+void Model::ProcessNode(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform)
 {
+	glm::mat4 nodeTransform = parentTransform * ConvertToGLM(node->mTransformation);
+
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(std::move(ProcessMesh(mesh, scene)));
+		meshes.push_back(std::move(ProcessMesh(mesh, scene, nodeTransform)));
 
 	}
 	for (unsigned int i = 0; i < node->mNumChildren; i++)
 	{
-		ProcessNode(node->mChildren[i], scene);
+		ProcessNode(node->mChildren[i], scene, nodeTransform);
 	}
 }
 
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nodeTransform)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -202,4 +201,14 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat,
 Texture Model::LoadEmbeddedTexture(const aiTexture* aiTex, const std::string& typeName)
 {
 	return Texture(aiTex, typeName);
+}
+
+glm::mat4 Model::ConvertToGLM(const aiMatrix4x4& m)
+{
+	return glm::mat4(
+		m.a1, m.b1, m.c1, m.d1,
+		m.a2, m.b2, m.c2, m.d2,
+		m.a3, m.b3, m.c3, m.d3,
+		m.a4, m.b4, m.c4, m.d4
+	);
 }
