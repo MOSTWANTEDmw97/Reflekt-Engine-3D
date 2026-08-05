@@ -4,9 +4,9 @@
 
 #include<glm.hpp>
 #include<vector>
-#include"VBO.h"
-#include"VAO.h"
-#include"EBO.h"
+#include"GLBuffers/VBO.h"
+#include"GLBuffers/VAO.h"
+#include"GLBuffers/EBO.h"
 #include"Shader.h"
 #include"Material.h"
 

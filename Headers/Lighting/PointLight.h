@@ -3,6 +3,7 @@
 #define POINTLIGHT_H
 
 #include"Lighting/Light_Managers/PointLightManager.h"
+#include"Math/Transform.h"
 
 class PointLight
 {

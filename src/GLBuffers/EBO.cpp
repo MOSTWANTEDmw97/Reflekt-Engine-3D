@@ -1,4 +1,4 @@
-#include"EBO.h"
+#include"GLBuffers/EBO.h"
 
 EBO::EBO(const void *data, GLsizeiptr size)
 {

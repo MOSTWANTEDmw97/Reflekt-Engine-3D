@@ -4,8 +4,7 @@
 
 #include<glm.hpp>
 #include<vector>
-#include"SSBO.h"
-#include<Math/Transform.h>
+#include"GLBuffers/SSBO.h"
 
 struct PointLightData
 {

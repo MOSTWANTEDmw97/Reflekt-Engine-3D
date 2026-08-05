@@ -5,7 +5,7 @@
 #include<glad/glad.h>
 #include<glm.hpp>
 #include<vector>
-#include"SSBO.h"
+#include"GLBuffers/SSBO.h"
 
 struct DirectionalLightData
 {

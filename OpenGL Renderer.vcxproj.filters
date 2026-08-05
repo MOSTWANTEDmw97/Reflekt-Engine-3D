@@ -21,13 +21,13 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VBO.cpp">
+    <ClCompile Include="src\GLBuffers\VBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\VAO.cpp">
+    <ClCompile Include="src\GLBuffers\VAO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EBO.cpp">
+    <ClCompile Include="src\GLBuffers\EBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Mesh.cpp">
@@ -39,7 +39,7 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SSBO.cpp">
+    <ClCompile Include="src\GLBuffers\SSBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Lighting\Light_Managers\DirectionalLightManager.cpp">
@@ -95,13 +95,13 @@
     <ClInclude Include="Headers\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\VBO.h">
+    <ClInclude Include="Headers\GLBuffers\VBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\VAO.h">
+    <ClInclude Include="Headers\GLBuffers\VAO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\EBO.h">
+    <ClInclude Include="Headers\GLBuffers\EBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Mesh.h">
@@ -113,7 +113,7 @@
     <ClInclude Include="Headers\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\SSBO.h">
+    <ClInclude Include="Headers\GLBuffers\SSBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Lighting\Light_Managers\PointLightManager.h">

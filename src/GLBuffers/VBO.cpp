@@ -1,4 +1,4 @@
-#include"VBO.h"
+#include"GLBuffers/VBO.h"
 
 VBO::VBO(const void *data, GLsizeiptr size, GLenum drawType)
 {

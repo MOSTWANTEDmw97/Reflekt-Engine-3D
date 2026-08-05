@@ -3,7 +3,7 @@
 #define SPOTLIGHTMANAGER_H
 #include<glm.hpp>
 #include<vector>
-#include"SSBO.h"
+#include"GLBuffers/SSBO.h"
 
 struct SpotLightData
 {

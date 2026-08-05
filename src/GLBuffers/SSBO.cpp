@@ -1,4 +1,4 @@
-#include"SSBO.h"
+#include"GLBuffers/SSBO.h"
 
 SSBO::SSBO(GLuint bindingPoint)
 	: bindingPoint(bindingPoint)
