@@ -77,13 +77,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include;$(ProjectDir)External\IMGUI\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;zlibstaticd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -101,13 +101,13 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include;$(ProjectDir)External\IMGUI\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -123,13 +123,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include;$(ProjectDir)External\IMGUI\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;zlibstaticd.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -147,13 +147,13 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Headers;$(ProjectDir)Shaders;$(ProjectDir)External\GLAD\include;$(ProjectDir)External\GLFW\include;$(ProjectDir)External\GLM;$(ProjectDir)External\STB;$(ProjectDir)\External\ASSIMP\include;$(ProjectDir)External\IMGUI\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)External\GLFW\lib;$(ProjectDir)External\ASSIMP\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mtd.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;unit.lib;assimp-vc145-mt.lib;zlibstatic.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -163,11 +163,17 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="External\GLAD\src\glad.c" />
+    <ClCompile Include="External\IMGUI\src\imgui.cpp" />
+    <ClCompile Include="External\IMGUI\src\imgui_draw.cpp" />
+    <ClCompile Include="External\IMGUI\src\imgui_impl_glfw.cpp" />
+    <ClCompile Include="External\IMGUI\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="External\IMGUI\src\imgui_tables.cpp" />
+    <ClCompile Include="External\IMGUI\src\imgui_widgets.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\DirectionalLightManager.cpp" />
     <ClCompile Include="src\EBO.cpp" />
-    <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -179,6 +185,7 @@
     <ClCompile Include="src\Lighting\Light_Managers\SpotLightManager.cpp" />
     <ClCompile Include="src\SSBO.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\UI\IMGUI\IMGUI_DebugUI.cpp" />
     <ClCompile Include="src\VAO.cpp" />
     <ClCompile Include="src\VBO.cpp" />
   </ItemGroup>
@@ -198,8 +205,10 @@
     <ClInclude Include="Headers\SSBO.h" />
     <ClInclude Include="Headers\Texture.h" />
     <ClInclude Include="Headers\Math\Transform.h" />
+    <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h" />
     <ClInclude Include="Headers\VAO.h" />
     <ClInclude Include="Headers\VBO.h" />
+    <ClInclude Include="Headers\UI\IMGUI\TransformInspector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Default.frag.glsl" />

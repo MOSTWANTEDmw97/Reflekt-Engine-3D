@@ -4,12 +4,14 @@
 #include<glm.hpp>
 #include<gtc/matrix_transform.hpp>
 #include<gtc/type_ptr.hpp>
+#include<assimp/version.h>
 
 #include"Camera.h"
 #include"Model.h"
 #include"Lighting/DirectionalLight.h"
 #include"Lighting/PointLight.h"
 #include"Lighting/SpotLight.h"
+#include"UI/IMGUI/IMGUI_DebugUI.h"
 
 //OpenGL 4.6.0
 //GLFW 3.3
@@ -26,8 +28,11 @@ void Mouse_callback(GLFWwindow* window, Camera& camera, float window_Width, floa
 int main()
 {
 	//Fields
+	float currentFrame = 0.0f;
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
+	float fps = 1.0f / deltaTime;
+	float fpsUpdateTimer = 0.0f;
 
 	// Initialize GLFW 
 	glfwInit();
@@ -53,6 +58,11 @@ int main()
 	glViewport(0, 0, screenWidth, screenHeight);
 	// Resize frame buffer
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+	IMGUI_DebugUI debugUI;
+	debugUI.Init(window);
+
+
 
 	Texture leaf("Assets/Textures/Leaf.jpeg", "diffuse");
 	Texture container_Diffuse("Assets/Textures/Container.png", "diffuse");
@@ -116,6 +126,7 @@ int main()
 		20,21,22,22,23,20
 	};
 
+
 	std::vector<Vertex> cubeVerts;
 	std::vector<unsigned int> cubeInds;
 	for (size_t i = 0; i < sizeof(cubeVertices) / sizeof(cubeVertices[0]); i += 11)
@@ -129,12 +140,13 @@ int main()
 	}
 	cubeInds.assign(cubeIndices, cubeIndices + sizeof(cubeIndices) / sizeof(GLuint));
 
-	Texture bag_diffuse("Assets/Textures/Bag_Diffuse.jpg", "diffuse");
+	Texture bag_Diffuse("Assets/Textures/Bag_Diffuse.jpg", "diffuse");
+	Texture bag_Specular("Assets/Textures/Bag_Metalic.jpg", "specular");
 
 	Material iron({ container_Diffuse, container_Spec }, 2.0f);
 	Material leafMaterial({ leaf }, 32.0f);
 	Material boardMaterial({ board_Diffuse }, 32.0f);
-	Material bagMat({ bag_diffuse, bag_diffuse }, 8.0f);
+	Material bagMat({ bag_Diffuse, bag_Specular }, 8.0f);
 
 	Mesh cubeMesh(cubeVerts, cubeInds, iron);
 
@@ -149,10 +161,12 @@ int main()
 	Model backPackModel("Assets/Models/Bag.fbx", backPackTransform);
 	Model brickCubeModel("Assets/Models/BrickCube.fbx", Transform(glm::vec3(-5.0f, 0.0f, 0.0f)));
 	backPackModel.transform.scale = glm::vec3(0.002f);
+	debugUI.RegisterObject(&backPackModel, "backPack");
+	debugUI.RegisterObject(&brickCubeModel, "brickCube");
+
 
 	for (Mesh& mesh : backPackModel.meshes)
 	{
-		std::cout << "Mesh count: " << backPackModel.meshes.size() << std::endl;
 		mesh.SetMaterial(bagMat);
 	}
 
@@ -191,17 +205,30 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
+
 	// Update
 	while (!glfwWindowShouldClose(window))
 	{
-		float currentFrame = glfwGetTime();
+		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		fpsUpdateTimer += deltaTime;
+		if (fpsUpdateTimer >= 0.25f)
+		{ // update every 0.25s
+			fps = 1.0f / deltaTime;
+			fpsUpdateTimer = 0.0f;
+		}
+
 
 		ProcessInput(window, camera, deltaTime);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		debugUI.BeginFrame();
+		debugUI.RenderUI();
+		
+
 		
 		glm::vec3 updateLightPos = glm::vec3(0.0f);
 		updateLightPos.x = 1.0f * cos(glfwGetTime());
@@ -228,6 +255,7 @@ int main()
 		lightModel.Draw(lightShader);
 		lightModel.transform.position = updateLightPos;
 
+		debugUI.EndFrame();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -236,6 +264,8 @@ int main()
 	pointLights.DeleteBuffer();
 	directionalLights.DeleteBuffer();
 	spotLights.DeleteBuffer();
+
+	debugUI.Shutdown();
 	glfwTerminate();
 	
 	return 0;

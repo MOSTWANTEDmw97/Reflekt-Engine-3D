@@ -5,7 +5,6 @@
 #include<glm.hpp>
 #include<gtc/matrix_transform.hpp>
 #include<gtc/quaternion.hpp>
-//#include<gtx/quaternion.hpp>
 
 struct Transform
 {
