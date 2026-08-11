@@ -6,6 +6,9 @@
 
 #include"Model.h"
 
+//TODO:
+//Support for multiple meshes and materials in one models 
+
 Model::Model(const std::vector<Mesh>& meshList, const Transform& initialTransform)
 	: meshes(meshList), transform(initialTransform) {}
 
@@ -37,7 +40,9 @@ void Model::LoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, 
-		aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices);
+		aiProcess_Triangulate | aiProcess_CalcTangentSpace |
+		aiProcess_GenSmoothNormals | aiProcess_PreTransformVertices | 
+		aiProcess_JoinIdenticalVertices | aiProcess_ImproveCacheLocality);
 
 	if (scene)
 	{
@@ -66,7 +71,7 @@ void Model::LoadModel(const std::string& path)
 void Model::ProcessNode(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform)
 {
 	glm::mat4 nodeTransform = parentTransform * ConvertToGLM(node->mTransformation);
-
+	std::cout << "processing mesh..." << std::endl;
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -96,7 +101,8 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nod
 			mesh->mVertices[i].y,
 			mesh->mVertices[i].z,
 			1.0f);
-		pos = nodeTransform * pos;
+		
+		//pos = nodeTransform * pos;
 		vertex.position = glm::vec3(pos);
 
 		//vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
@@ -127,7 +133,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nod
 		std::cout << "Vertex " << i << ": Position(" << vertex.position.x << ", " << vertex.position.y << ", " << vertex.position.z
 			<< "), Normal(" << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z
 			<< "), TexCoords(" << vertex.texCoords.x << ", " << vertex.texCoords.y << ")" << std::endl;
-			*/
+		*/	
 	}
 
 	// Indices

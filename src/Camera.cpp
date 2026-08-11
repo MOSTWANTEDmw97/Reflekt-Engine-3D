@@ -11,11 +11,14 @@ Camera::Camera(const Transform& t, float fov, float clip_Near, float clip_Far)
 glm::mat4 Camera::GetViewMatrix() const
 {
 	//+Z forward
-	return glm::lookAt(
+	glm::mat4 view = glm::lookAt(
 		transform.position,
 		transform.position + transform.Forward,
 		transform.Up
 	);
+	//As right is cross(forward, up) and typically -Z forward is standard, so Changing to Z forward flips it
+	glm::mat4 flipX = glm::scale(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f, 1.0f));
+	return flipX * view;
 }
 glm::mat4 Camera::GetProjectionMatrix(float aspectRatio) const
 {

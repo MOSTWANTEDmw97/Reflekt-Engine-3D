@@ -9,6 +9,10 @@ out vec4 FragColor;
 
 //Uniforms
 uniform vec3 viewPos; // Camera pos
+uniform vec3 fogColor;
+uniform float fogNear;
+uniform float fogFar;
+uniform float fogDensity;
 
 struct Material
 {
@@ -59,6 +63,8 @@ layout(std430, binding = 2) buffer SpotLightBuffer
 };
 
 //Function declarations
+float LinearizeDepth(float depth, float near, float far);
+
 vec3 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir);
 vec3 CalcPointLight(PointLight pointLight, vec3 norm, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight spotLight, vec3 norm, vec3 fragPos, vec3 viewDir);
@@ -83,12 +89,28 @@ void main()
 	{
 		result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
 	}
+	
+    float depth = LinearizeDepth(gl_FragCoord.z, 0.1, 100);	
+	float fogFactor = 1.0 - exp(-depth * fogDensity);
 
-	FragColor = vec4(result, 1.0); //Opaque
-	//FragColor = vec4(0.0, 1.0, 0.0, 1.0); //Transparent
+	vec3 litColor = result;
+	
+	// Final color with alpha preserved
+	vec4 texColor = texture(material.diffuse, TexCoord);
+	vec4 sceneColor = vec4(litColor, texColor.a);
+
+	if(sceneColor.a < 0.25)
+		discard;
+
+	FragColor = mix(sceneColor, vec4(fogColor, sceneColor.a), fogFactor);	
 	//FragColor = vec4(normalize(Normal) * 0.5 + 0.5, 1.0); // Face normals
 	
-	
+}
+
+float LinearizeDepth(float depth, float near, float far)
+{
+    float z = depth * 2.0 - 1.0; // back to NDC
+    return (2.0 * near * far) / (far + near - z * (far - near));
 }
 
 vec3 CalcDirLight(DirectionalLight light, vec3 norm, vec3 viewDir)

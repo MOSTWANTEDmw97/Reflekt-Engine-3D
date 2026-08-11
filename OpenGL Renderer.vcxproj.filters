@@ -146,7 +146,7 @@
     <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\UI\IMGUI\TransformInspector.h">
+    <ClInclude Include="Headers\UI\IMGUI\Inspector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,6 +13,8 @@
 #include"Lighting/SpotLight.h"
 #include"UI/IMGUI/IMGUI_DebugUI.h"
 
+
+#define DebugUI_Register_Object(obj) debugUI.RegisterObject(&obj, #obj)
 //OpenGL 4.6.0
 //GLFW 3.3
 
@@ -62,16 +64,6 @@ int main()
 	IMGUI_DebugUI debugUI;
 	debugUI.Init(window);
 
-
-
-	Texture leaf("Assets/Textures/Leaf.jpeg", "diffuse");
-	Texture container_Diffuse("Assets/Textures/Container.png", "diffuse");
-	Texture container_Spec("Assets/Textures/Container_Specular.png", "specular");
-	Texture board_Diffuse("Assets/Textures/CheckerBoard.jpg", "diffuse");
-
-
-	Shader shader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/Default.frag.glsl");
-	Shader lightShader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/LightSource.frag.glsl");
 
 	GLfloat cubeVertices[] = {
 		// positions        // normals       // colors        // texCoords
@@ -140,39 +132,93 @@ int main()
 	}
 	cubeInds.assign(cubeIndices, cubeIndices + sizeof(cubeIndices) / sizeof(GLuint));
 
+
+	GLfloat planeVertices[] = {
+		// positions          // normals        // colors        // texCoords
+		// Bottom-left
+	   -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f,1.0f,1.0f,   0.0f, 0.0f,
+		// Bottom-right
+		0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f,1.0f,1.0f,   1.0f, 0.0f,
+		 // Top-right
+		0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f,1.0f,1.0f,   1.0f, 1.0f,
+		  // Top-left
+	   -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   1.0f,1.0f,1.0f,   0.0f, 1.0f,
+	};
+
+	GLuint planeIndices[] = {
+		0, 1, 2,   // first triangle
+		0, 2, 3    // second triangle
+	};
+	std::vector<Vertex> planeVerts;
+	std::vector<unsigned int> planeInds;
+
+	for (size_t i = 0; i < sizeof(planeVertices) / sizeof(planeVertices[0]); i += 11)
+	{
+		Vertex vertex;
+		vertex.position = glm::vec3(planeVertices[i], planeVertices[i + 1], planeVertices[i + 2]);
+		vertex.normal = glm::vec3(planeVertices[i + 3], planeVertices[i + 4], planeVertices[i + 5]);
+		vertex.color = glm::vec3(planeVertices[i + 6], planeVertices[i + 7], planeVertices[i + 8]);
+		vertex.texCoords = glm::vec2(planeVertices[i + 9], planeVertices[i + 10]);
+		planeVerts.push_back(vertex);
+	}
+
+	planeInds.assign(planeIndices, planeIndices + sizeof(planeIndices) / sizeof(GLuint));
+
+
+	//Shader
+	Shader shader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/Default.frag.glsl");
+	Shader lightShader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/LightSource.frag.glsl");
+
+
+	//Model and mesh and mats
+	Texture leaf("Assets/Textures/Leaf.jpeg", "diffuse");
+	Texture container_Diffuse("Assets/Textures/Container.png", "diffuse");
+	Texture container_Spec("Assets/Textures/Container_Specular.png", "specular");
+	Texture board_Diffuse("Assets/Textures/CheckerBoard.jpg", "diffuse");
 	Texture bag_Diffuse("Assets/Textures/Bag_Diffuse.jpg", "diffuse");
 	Texture bag_Specular("Assets/Textures/Bag_Metalic.jpg", "specular");
+	Texture c_Grass("Assets/Textures/C_Grass.jpg", "diffuse");
+	Texture grass("Assets/Textures/grass.png", "diffuse");
 
 	Material iron({ container_Diffuse, container_Spec }, 2.0f);
 	Material leafMaterial({ leaf }, 32.0f);
 	Material boardMaterial({ board_Diffuse }, 32.0f);
 	Material bagMat({ bag_Diffuse, bag_Specular }, 8.0f);
+	Material grassMat({ c_Grass }, 8.0f);
+	Material grassM({ grass }, 8.0f);
 
 	Mesh cubeMesh(cubeVerts, cubeInds, iron);
+	Mesh planeMesh(planeVerts, planeInds, grassM);
+
 
 	Transform cubeTransform(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	Model cubeModel({cubeMesh}, cubeTransform);
-	cubeModel.transform.position = glm::vec3(5.0f, 0.0f, 0.0f);
+	cubeModel.transform.position = glm::vec3(-2.5f, 0.0f, -1.0f);
 	Model lightModel({ cubeMesh }, cubeTransform);
 	lightModel.transform.scale = glm::vec3(0.2f);
-
-	Transform backPackTransform(glm::vec3(0.0f, 0.0f, 0.0f));
-	Model backPackModel("Assets/Models/Bag.fbx", backPackTransform);
-	Model brickCubeModel("Assets/Models/BrickCube.fbx", Transform(glm::vec3(-5.0f, 0.0f, 0.0f)));
-	backPackModel.transform.scale = glm::vec3(0.002f);
-	debugUI.RegisterObject(&backPackModel, "backPack");
-	debugUI.RegisterObject(&brickCubeModel, "brickCube");
+	Model grassMT({ planeMesh }, Transform(glm::vec3(0.0f, 0.0f, -2.0f)));
 
 
-	for (Mesh& mesh : backPackModel.meshes)
-	{
-		mesh.SetMaterial(bagMat);
-	}
+	Transform backPackTransform(glm::vec3(1.0f, 0.0f, 0.0f));
+	Model brickCubeModel("Assets/Models/BrickCube.fbx", Transform(glm::vec3(2.0f, 0.0f, -1.0f)));
+	Model buildingModel("Assets/Models/House.fbx", Transform(glm::vec3(0.0f, 1.5f, 0.0f)));
+	Model grassPlaneModel("Assets/Models/GrassGround.fbx", Transform(glm::vec3(0.0f, -0.5f, 0.0f)));
+	//Model grassModel("Assets/Models/Grass.fbx", Transform(glm::vec3(0.0f, 0.0f, -2.0f)));
+	grassPlaneModel.transform.scale = glm::vec3(0.5f);
+	//grassPlaneModel.meshes[0].SetMaterial(grassMat);
+
+	buildingModel.transform.scale = glm::vec3(0.005f);
+	DebugUI_Register_Object(buildingModel);
+	DebugUI_Register_Object(brickCubeModel);
+	DebugUI_Register_Object(cubeModel);
+	DebugUI_Register_Object(grassPlaneModel);
+	//DebugUI_Register_Object(grassModel);
+
 
 	brickCubeModel.transform.scale = glm::vec3(0.005f);
 
-
+	//Camera
 	Transform cameraTransform(glm::vec3(0.0f, 0.0f, -3.0f));
 	float fov = 60.0f;
 	float clipNear = 0.01f;
@@ -184,23 +230,23 @@ int main()
 	glm::vec3 lightPos = glm::vec3(1.0f, 0.0f, 0.5f);
 	glm::vec3 lightDir = glm::vec3(1.0f, 0.45f, 0.25f);
 
-	
+	//Light
 	DirectionalLightManager directionalLights(0);
 	PointLightManager pointLights(1);
 	SpotLightManager spotLights(2);
  
-	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 pos = glm::vec3(-2.0f, 1.0f, -0.5f);
 	glm::vec3 amb = glm::vec3(0.2f);
-	glm::vec3 diff = glm::vec3(0.8f);
+	glm::vec3 diff = glm::vec3(0.5f);
 	glm::vec3 spec = glm::vec3(1.0f);
 	float cons = 1.0f;
-	float lin = 1.7f;
-	float quad = 0.034f;
-	
+	float lin = 0.9f;
+	float quad = 0.34f;
+	lightModel.transform.position = pos;
 
 	Transform lightTransform(pos);
 	PointLight light(pointLights, lightTransform, amb, diff, spec, cons, lin, quad);
-	DirectionalLight globalLight(directionalLights, lightTransform, glm::vec3(0.25f), glm::vec3(0.5f), glm::vec3(1.0f));
+	DirectionalLight globalLight(directionalLights, lightTransform, glm::vec3(0.1f), glm::vec3(0.25f), glm::vec3(0.0f));
 
 	glEnable(GL_DEPTH_TEST);
 	std::cout << glGetString(GL_VERSION) << std::endl;
@@ -236,13 +282,19 @@ int main()
 
 		shader.Use();
 		shader.SetVec3("viewPos", camera.transform.position);
+		shader.SetVec3("fogColor", glm::vec3(0.5f));
+		shader.SetFloat("fogDensity", 0.01f);
 		//iron.Apply(shader);
-		light.SetPosition(updateLightPos);
+		//light.SetPosition(updateLightPos);
 
-		glm::mat4 model = backPackModel.transform.GetModelMatrix();
-		backPackModel.Draw(shader);
+		glm::mat4 model = glm::mat4(1.0f);
 		brickCubeModel.Draw(shader);
+		buildingModel.Draw(shader);
 		cubeModel.Draw(shader);
+		//grassModel.Draw(shader);
+		grassPlaneModel.Draw(shader);
+		grassMT.Draw(shader);
+
 		camera.BindToShader(shader, model, screenWidth / screenHeight);
 
 
@@ -253,7 +305,7 @@ int main()
 		camera.BindToShader(lightShader, lightModelMat, screenWidth / screenHeight);
 		lightShader.SetVec3("lightColor", lightColor);
 		lightModel.Draw(lightShader);
-		lightModel.transform.position = updateLightPos;
+		//lightModel.transform.position = updateLightPos;
 
 		debugUI.EndFrame();
 		glfwSwapBuffers(window);
@@ -276,7 +328,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-bool enableCameraLook = true;
+bool enableCameraLook = false;
 void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime)
 {
 	//bool enableCameraLook = true;
@@ -286,30 +338,47 @@ void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime)
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.transform.position += camera.transform.Forward * 1.0f * deltaTime;
+		camera.transform.position += camera.transform.Forward * 2.0f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.transform.position -= camera.transform.Forward * 0.5f * deltaTime;
+		camera.transform.position -= camera.transform.Forward * 2.0f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.transform.position += camera.transform.Right * 0.5f * deltaTime;
+		camera.transform.position -= camera.transform.Right * 2.0f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.transform.position -= camera.transform.Right * 0.5f * deltaTime;
+		camera.transform.position += camera.transform.Right * 2.0f * deltaTime;
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 	{
 		enableCameraLook = !enableCameraLook;
 	}
 	Mouse_callback(window, camera, screenWidth, screenHeight, enableCameraLook);
 }
+
 void Mouse_callback(GLFWwindow* window, Camera& camera,
 	float window_Width, float window_Height,
 	bool enableCameraLook)
 {
-	if (enableCameraLook)
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		static bool firstMouse = true;
-		static float lastX = window_Width / 2.0f;
-		static float lastY = window_Height / 2.0f;
+	static bool cursorLocked = false;
+	static bool firstMouse = true;
+	static float lastX = window_Width / 2.0f;
+	static float lastY = window_Height / 2.0f;
+	static float yaw = 0.0f;
+	static float pitch = 0.0f;
 
+	if (enableCameraLook && !cursorLocked)
+	{
+		// Lock cursor once when enabling
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		cursorLocked = true;
+		firstMouse = true; // reset so camera doesn’t jump
+	}
+	else if (!enableCameraLook && cursorLocked)
+	{
+		// Unlock cursor once when disabling
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		cursorLocked = false;
+	}
+
+	if (cursorLocked)
+	{
 		double xPos, yPos;
 		glfwGetCursorPos(window, &xPos, &yPos);
 
@@ -318,36 +387,28 @@ void Mouse_callback(GLFWwindow* window, Camera& camera,
 			lastX = (float)xPos;
 			lastY = (float)yPos;
 			firstMouse = false;
+			return; // skip movement on first frame
 		}
 
-		float xoffset = lastX - (float)xPos ;
-		float yoffset = (float)yPos - lastY ; // reversed since y-coordinates go bottom->top
+		float xoffset = (float)xPos - lastX ;
+		float yoffset = (float)yPos - lastY;
 
 		lastX = (float)xPos;
 		lastY = (float)yPos;
 
-		// sensitivity
 		float sensitivity = 0.1f;
 		xoffset *= sensitivity;
 		yoffset *= sensitivity;
 
-		// yaw/pitch accumulation
-		static float yaw = 0.0f;   // Unity-style: facing +Z at yaw=0
-		static float pitch = 0.0f;
-
 		yaw += xoffset;
 		pitch += yoffset;
 
-		// clamp pitch
-		if (pitch > 89.0f)  pitch = 89.0f;
-		if (pitch < -89.0f) pitch = -89.0f;
+		pitch = glm::clamp(pitch, -89.0f, 89.0f);
 
-		// build quaternion from Euler angles
 		glm::quat newRot = glm::quat(glm::radians(glm::vec3(pitch, yaw, 0.0f)));
-		camera.SetRotation(newRot); // updates Transform + direction vectors
-	}
-	else
-	{
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		camera.SetRotation(newRot);
 	}
 }
+
+
+

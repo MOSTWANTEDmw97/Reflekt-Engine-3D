@@ -18,7 +18,7 @@ class Texture
 		//External texture from file
 		Texture(const char* imagePath,
 			const std::string& typeName,
-			GLenum format = GL_RGB,
+			GLenum format = GL_RGBA,
 			GLenum texType = GL_TEXTURE_2D,
 			GLenum slot = GL_TEXTURE0,
 			GLenum pixelType = GL_UNSIGNED_BYTE,

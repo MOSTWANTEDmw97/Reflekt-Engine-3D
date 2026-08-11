@@ -7,7 +7,7 @@
 #include"Shader.h"
 #include"Mesh.h"
 #include"Math/Transform.h"
-#include"UI/IMGUI/TransformInspector.h"
+#include"UI/IMGUI/Inspector.h"
 
 #include<assimp/Importer.hpp>
 #include<assimp/scene.h>
@@ -32,11 +32,10 @@ class Model
 		void Delete();
 
 
-		std::string GetName() const { return "Model"; }
+		//std::string GetName() const { return "Model"; }
 		void DrawInspector()
 		{
 			DrawTransformInspector(transform);
-			ImGui::Text("Directory: %s", directory.c_str());
 		}
 
 		private:

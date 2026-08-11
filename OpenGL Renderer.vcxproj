@@ -208,7 +208,7 @@
     <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h" />
     <ClInclude Include="Headers\GLBuffers\VAO.h" />
     <ClInclude Include="Headers\GLBuffers\VBO.h" />
-    <ClInclude Include="Headers\UI\IMGUI\TransformInspector.h" />
+    <ClInclude Include="Headers\UI\IMGUI\Inspector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Default.frag.glsl" />

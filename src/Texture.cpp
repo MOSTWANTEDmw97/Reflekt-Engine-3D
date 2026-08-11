@@ -23,10 +23,15 @@ Texture::Texture(const char* imagePath, const std::string& typeName, GLenum form
 		std::cerr << "Failed to load texture: "<< imagePath << std::endl;
 		return;
 	}
+
+
 	GLenum texFormat = format;
-	if (nrChannels == 1) texFormat = GL_RED;
+	if (nrChannels == 1)      texFormat = GL_RED;
 	else if (nrChannels == 3) texFormat = GL_RGB;
 	else if (nrChannels == 4) texFormat = GL_RGBA;
+		
+
+	//std::cout << "Image: " << imagePath << format << " Tex: "<<texFormat <<" nr: " << nrChannels << std::endl;
  
 	glGenTextures(1, &ID);
 	glActiveTexture(slot);
