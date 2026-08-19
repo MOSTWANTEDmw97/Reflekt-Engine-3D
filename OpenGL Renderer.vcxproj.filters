@@ -18,7 +18,7 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
+    <ClCompile Include="src\Graphics\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\GLBuffers\VBO.cpp">
@@ -33,7 +33,7 @@
     <ClCompile Include="src\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
+    <ClCompile Include="src\Graphics\Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
@@ -60,7 +60,7 @@
     <ClCompile Include="src\Lighting\SpotLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Material.cpp">
+    <ClCompile Include="src\Graphics\Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model.cpp">
@@ -90,9 +90,18 @@
     <ClCompile Include="src\UI\IMGUI\IMGUI_DebugUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GLBuffers\FBO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\ScreenQuad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ShaderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Shader.h">
+    <ClInclude Include="Headers\Graphics\Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\GLBuffers\VBO.h">
@@ -107,7 +116,7 @@
     <ClInclude Include="Headers\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Texture.h">
+    <ClInclude Include="Headers\Graphics\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Camera.h">
@@ -134,7 +143,7 @@
     <ClInclude Include="Headers\Lighting\Light_Managers\DirectionalLightManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Material.h">
+    <ClInclude Include="Headers\Graphics\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Model.h">
@@ -149,6 +158,15 @@
     <ClInclude Include="Headers\UI\IMGUI\Inspector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\GLBuffers\FBO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Rendering\ScreenQuad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Graphics\ShaderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Default.frag.glsl">
@@ -158,5 +176,10 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="Assets\Shaders\LightSource.frag.glsl" />
+    <None Include="Default_Shaders\Legacy\Default.frag.glsl" />
+    <None Include="Default_Shaders\Legacy\Default.vert.glsl" />
+    <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
+    <None Include="Default_Shaders\default.shader" />
+    <None Include="Default_Shaders\PostPass.shader" />
   </ItemGroup>
 </Project>

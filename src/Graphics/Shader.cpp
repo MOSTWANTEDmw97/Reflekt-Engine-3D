@@ -2,12 +2,72 @@
 #include<fstream>
 #include<sstream>
 #include<filesystem>
+#include<string>
 #include<gtc/type_ptr.hpp>
-#include"Shader.h"
+#include"Graphics/Shader.h"
 
+
+static std::string ExtractShaderStage(const std::string& source, const std::string& tag)
+{
+	size_t start = source.find(tag);
+	if (start == std::string::npos) return "";
+
+	size_t end = source.find("#SHADER", start + tag.size());
+	return source.substr(start + tag.size(), end - (start + tag.size()));
+}
+//Single shader file
+Shader::Shader(const char* filePath)
+{
+	std::string shaderCode = LoadShaderSource(filePath);
+
+	std::string vertexCode = ExtractShaderStage(shaderCode, "#SHADER VERTEX");
+	std::string fragmentCode = ExtractShaderStage(shaderCode, "#SHADER FRAGMENT");
+	std::string geometryCode = ExtractShaderStage(shaderCode, "#SHADER GEOMETRY");
+	std::string tessControlCode = ExtractShaderStage(shaderCode, "#SHADER TESS_CONTROL"); //Tesselation Control
+	std::string tessEvaluationCode = ExtractShaderStage(shaderCode, "#SHADER TESS_EVALUATION"); //Tesselation Evaluation
+	std::string computeCode = ExtractShaderStage(shaderCode, "#SHADER COMPUTE"); //Compute shader
+
+	ID = glCreateProgram();
+
+	auto CompileShaderStage = [&](const std::string& src, GLenum type, const std::string& name)
+		{
+			if (src.empty())
+			{
+				//std::cout << "No " << name << " stage found.\n";
+				return GLuint(0);
+			}
+			GLuint shader = glCreateShader(type);
+			const char* code = src.c_str();
+			glShaderSource(shader, 1, &code, nullptr);
+			glCompileShader(shader);
+			CheckCompileErrors(shader, name);
+			glAttachShader(ID, shader);
+			return shader;
+		};
+
+	GLuint vertex = CompileShaderStage(vertexCode, GL_VERTEX_SHADER, "VERTEX");
+	GLuint fragment = CompileShaderStage(fragmentCode, GL_FRAGMENT_SHADER, "FRAGMENT");
+	GLuint geometry = CompileShaderStage(geometryCode, GL_GEOMETRY_SHADER, "GEOMETRY");
+	GLuint tessControl = CompileShaderStage(tessControlCode, GL_TESS_CONTROL_SHADER, "TESS_CONTROL");
+	GLuint tessEvaluation = CompileShaderStage(tessEvaluationCode, GL_TESS_EVALUATION_SHADER, "TESS_EVALUATION");
+	GLuint compute = CompileShaderStage(computeCode, GL_COMPUTE_SHADER, "COMPUTE");
+
+	glLinkProgram(ID);
+	CheckCompileErrors(ID, "PROGRAM");
+
+	//Delete if not 0
+	if (vertex)   glDeleteShader(vertex);
+	if (fragment) glDeleteShader(fragment);
+	if (geometry) glDeleteShader(geometry);
+	if (tessControl) glDeleteShader(tessControl);
+	if (tessEvaluation) glDeleteShader(tessEvaluation);
+	if (compute)  glDeleteShader(compute);
+
+}
+
+//Seperate shader files
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
-	// 1. Retrieve the vertex/fragment source code from filePath
 	std::string vertexCode = LoadShaderSource(vertexPath);
 	std::string fragmentCode = LoadShaderSource(fragmentPath);
 	const char* vShaderCode = vertexCode.c_str();

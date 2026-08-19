@@ -7,8 +7,8 @@
 #include"GLBuffers/VBO.h"
 #include"GLBuffers/VAO.h"
 #include"GLBuffers/EBO.h"
-#include"Shader.h"
-#include"Material.h"
+#include"Graphics/Shader.h"
+#include"Graphics/Material.h"
 
 struct Vertex
 {
@@ -23,7 +23,7 @@ class Mesh
 	public:
 
 		Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, Material mat, GLenum drawType = GL_STATIC_DRAW);
-		void Draw(Shader& shader);
+		void Draw();
 		void Delete();
 
 		void SetMaterial(const Material& mat) { material = mat; }

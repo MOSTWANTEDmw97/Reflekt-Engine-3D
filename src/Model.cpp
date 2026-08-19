@@ -5,6 +5,7 @@
 #include<filesystem>
 
 #include"Model.h"
+#include"Graphics/ShaderManager.h"
 
 //TODO:
 //Support for multiple meshes and materials in one models 
@@ -18,13 +19,13 @@ Model::Model(const std::string& path, const Transform& initialTransform)
 	LoadModel(path);
 }
 
-void Model::Draw(Shader& shader)
+void Model::Draw()
 {
 	glm::mat4 modelMatrix = transform.GetModelMatrix();
-	shader.SetMat4("model", modelMatrix);
 	for (Mesh& mesh : meshes)
 	{
-		mesh.Draw(shader);
+		mesh.GetMaterial().shaderRef->SetMat4("model", modelMatrix);
+		mesh.Draw();
 	}
 }
 
@@ -71,7 +72,7 @@ void Model::LoadModel(const std::string& path)
 void Model::ProcessNode(aiNode* node, const aiScene* scene, const glm::mat4& parentTransform)
 {
 	glm::mat4 nodeTransform = parentTransform * ConvertToGLM(node->mTransformation);
-	std::cout << "processing mesh..." << std::endl;
+	//std::cout << "processing mesh..." << std::endl;
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -157,8 +158,15 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nod
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
+	//Shader defaultShader("Default_Shaders/Default.shader");
+	Shader& defaultShader = ShaderManager::Exists("default")
+		? ShaderManager::Get("default") : 
+		ShaderManager::Get("light");
 
-	Material material(textures, 128.0f);
+
+	Material material(&defaultShader, textures, 128.0f);
+
+
 	return Mesh(vertices, indices, material, GL_STATIC_DRAW);
 }
 

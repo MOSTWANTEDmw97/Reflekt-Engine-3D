@@ -6,7 +6,7 @@
 #include<gtc/matrix_transform.hpp>
 #include<gtc/quaternion.hpp>
 
-#include"Shader.h"
+#include"Graphics/Shader.h"
 #include"Math/Transform.h"
 
 class Camera

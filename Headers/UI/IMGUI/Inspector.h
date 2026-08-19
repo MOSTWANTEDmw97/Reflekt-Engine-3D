@@ -7,7 +7,7 @@
 #include<imgui.h>
 
 #include"Math/Transform.h"
-#include"Material.h"
+#include"Graphics/Material.h"
 
 inline void DrawTransformInspector(Transform& t)
 {

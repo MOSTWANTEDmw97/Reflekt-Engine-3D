@@ -89,7 +89,7 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ " &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Default_Shaders\" "$(OutDir)Default_Shaders\ " </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +135,7 @@
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
     <PostBuildEvent>
-      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ "</Command>
+      <Command>xcopy /E  /I  /Y "$(ProjectDir)Assets\" "$(OutDir)Assets\ " &amp;&amp; xcopy /E  /I  /Y "$(ProjectDir)Default_Shaders\" "$(OutDir)Default_Shaders\ " </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -171,39 +171,45 @@
     <ClCompile Include="External\IMGUI\src\imgui_tables.cpp" />
     <ClCompile Include="External\IMGUI\src\imgui_widgets.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\GLBuffers\FBO.cpp" />
+    <ClCompile Include="src\Graphics\ShaderManager.cpp" />
+    <ClCompile Include="src\Rendering\ScreenQuad.cpp" />
     <ClCompile Include="src\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\DirectionalLightManager.cpp" />
     <ClCompile Include="src\GLBuffers\EBO.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Graphics\Material.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Lighting\PointLight.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\PointLightManager.cpp" />
     <ClCompile Include="src\Model.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\Lighting\SpotLight.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\SpotLightManager.cpp" />
     <ClCompile Include="src\GLBuffers\SSBO.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Graphics\Texture.cpp" />
     <ClCompile Include="src\UI\IMGUI\IMGUI_DebugUI.cpp" />
     <ClCompile Include="src\GLBuffers\VAO.cpp" />
     <ClCompile Include="src\GLBuffers\VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
+    <ClInclude Include="Headers\GLBuffers\FBO.h" />
+    <ClInclude Include="Headers\Graphics\ShaderManager.h" />
+    <ClInclude Include="Headers\Rendering\ScreenQuad.h" />
     <ClInclude Include="Headers\Lighting\DirectionalLight.h" />
     <ClInclude Include="Headers\GLBuffers\EBO.h" />
     <ClInclude Include="Headers\Lighting\Light_Managers\DirectionalLightManager.h" />
-    <ClInclude Include="Headers\Material.h" />
+    <ClInclude Include="Headers\Graphics\Material.h" />
     <ClInclude Include="Headers\Mesh.h" />
     <ClInclude Include="Headers\Lighting\PointLight.h" />
     <ClInclude Include="Headers\Lighting\Light_Managers\PointLightManager.h" />
     <ClInclude Include="Headers\Model.h" />
-    <ClInclude Include="Headers\Shader.h" />
+    <ClInclude Include="Headers\Graphics\Shader.h" />
     <ClInclude Include="Headers\Lighting\SpotLight.h" />
     <ClInclude Include="Headers\Lighting\Light_Managers\SpotLightManager.h" />
     <ClInclude Include="Headers\GLBuffers\SSBO.h" />
-    <ClInclude Include="Headers\Texture.h" />
+    <ClInclude Include="Headers\Graphics\Texture.h" />
     <ClInclude Include="Headers\Math\Transform.h" />
     <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h" />
     <ClInclude Include="Headers\GLBuffers\VAO.h" />
@@ -214,6 +220,11 @@
     <None Include="Assets\Shaders\Default.frag.glsl" />
     <None Include="Assets\Shaders\Default.vert.glsl" />
     <None Include="Assets\Shaders\LightSource.frag.glsl" />
+    <None Include="Default_Shaders\default.shader" />
+    <None Include="Default_Shaders\Legacy\Default.frag.glsl" />
+    <None Include="Default_Shaders\Legacy\Default.vert.glsl" />
+    <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
+    <None Include="Default_Shaders\PostPass.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

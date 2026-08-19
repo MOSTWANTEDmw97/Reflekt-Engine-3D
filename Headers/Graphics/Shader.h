@@ -12,10 +12,11 @@ class Shader
 	public:
 		GLuint ID;
 
-		// Constructor
+		//Single shader file
+		Shader(const char* filePath);
+		//Seperate shader files
 		Shader(const char* vertexPath, const char* fragmentPath);
 
-		// Activate
 		void Use();
 		void Delete();
 

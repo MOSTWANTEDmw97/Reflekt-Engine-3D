@@ -24,9 +24,20 @@ void Mesh::SetupMesh(GLenum drawType)
 	vao.Unbind();
 }
 
-void Mesh::Draw(Shader& shader)
+void Mesh::Draw()
 {
-	material.Apply(shader);
+	material.Apply();
+
+	if (material.blendMode != BlendMode::Opaque)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		glDisable(GL_BLEND);
+	}
+
 	vao.Bind();
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 	//std::cout << "Index: " <<indexCount<< std::endl;

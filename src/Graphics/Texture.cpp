@@ -2,7 +2,7 @@
 #include<stb_image.h>
 #include<iostream>
 #include<algorithm>
-#include"Texture.h"
+#include"Graphics/Texture.h"
 
 
 // External texture 

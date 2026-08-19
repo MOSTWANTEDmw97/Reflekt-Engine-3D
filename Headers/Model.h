@@ -4,7 +4,7 @@
 
 #include<vector>
 #include<string>
-#include"Shader.h"
+#include"Graphics/Shader.h"
 #include"Mesh.h"
 #include"Math/Transform.h"
 #include"UI/IMGUI/Inspector.h"
@@ -28,7 +28,7 @@ class Model
 		Model(const std::vector<Mesh>& meshList, const Transform& initialTransform = Transform());
 		Model(const std::string& path, const Transform& initialTransform = Transform());
 
-		void Draw(Shader& shader);
+		void Draw();
 		void Delete();
 
 
