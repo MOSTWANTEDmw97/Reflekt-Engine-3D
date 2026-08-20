@@ -31,6 +31,7 @@ class Model
 		void Draw();
 		void Delete();
 
+		const std::vector<Mesh>& GetMeshes() const { return meshes; }
 
 		//std::string GetName() const { return "Model"; }
 		void DrawInspector()

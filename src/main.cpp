@@ -5,6 +5,7 @@
 #include<gtc/matrix_transform.hpp>
 #include<gtc/type_ptr.hpp>
 #include<assimp/version.h>
+#include<imgui.h>
 
 #include"Camera.h"
 #include"Model.h"
@@ -14,6 +15,9 @@
 #include"Lighting/SpotLight.h"
 #include"UI/IMGUI/IMGUI_DebugUI.h"
 #include"Rendering/ScreenQuad.h"
+#include"Rendering/RenderPipeline.h"
+#include"Graphics/Cubemap.h"
+#include"Rendering/Skybox.h"
 
 #include"GLBuffers/FBO.h"
 #include<string>
@@ -30,6 +34,36 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime);
 void Mouse_callback(GLFWwindow* window, Camera& camera, float window_Width, float window_Height, bool enableCameraLook);
 
+
+struct PerfStats
+{
+	float fps;
+	float frameTimeMs;
+	float fps1Low;
+	float fps01Low;
+};
+
+PerfStats CalculatePerfStats(const std::vector<float>& frameTimes)
+{
+	PerfStats stats{};
+	if (frameTimes.empty()) return stats;
+
+	float latest = frameTimes.back();
+	stats.fps = 1.0f / latest;
+	stats.frameTimeMs = latest * 1000.0f;
+
+	std::vector<float> sorted = frameTimes;
+	std::sort(sorted.begin(), sorted.end());
+	int n = (int)sorted.size();
+
+	float p99 = sorted[(int)(n * 0.99f)];
+	float p999 = sorted[(int)(n * 0.999f)];
+
+	stats.fps1Low = 1.0f / p99;
+	stats.fps01Low = 1.0f / p999;
+
+	return stats;
+}
 
 int main()
 {
@@ -111,18 +145,19 @@ int main()
 	};
 	GLuint cubeIndices[] = {
 		// Front
-		0, 1, 2, 2, 3, 0,
+		0, 2, 1, 0, 3, 2,
 		// Back
-		4, 5, 6, 6, 7, 4,
+		4, 5, 6, 4, 6, 7,
 		// Left
-		8, 9,10,10,11, 8,
+		8, 10, 9, 8, 11, 10,
 		// Right
-		12,13,14,14,15,12,
+		12, 13, 14, 12, 14, 15,
 		// Top
-		16,17,18,18,19,16,
+		16, 17, 18, 16, 18, 19,
 		// Bottom
-		20,21,22,22,23,20
+		20, 22, 21, 20, 23, 22
 	};
+
 
 
 	std::vector<Vertex> cubeVerts;
@@ -189,13 +224,30 @@ int main()
 	Texture grass("Assets/Textures/grass.png", "diffuse");
 	Texture windowTex("Assets/Textures/Window.png", "diffuse");
 
+
+	//Skybox init
+	std::vector<std::string> faces = {
+		"Assets/Textures/Skybox/right.jpg",
+		"Assets/Textures/Skybox/left.jpg",
+		"Assets/Textures/Skybox/top.jpg",
+		"Assets/Textures/Skybox/bottom.jpg",
+		"Assets/Textures/Skybox/front.jpg",
+		"Assets/Textures/Skybox/back.jpg"
+	};
+	Cubemap skyboxCubemap(faces);
+
+	Shader skyboxShader("Default_Shaders/Skybox.shader");
+	Skybox skybox(&skyboxCubemap, &skyboxShader);
+
 	Material iron(&shader, { container_Diffuse, container_Spec }, 2.0f);
 	Material leafMaterial(&shader, { leaf }, 32.0f);
 	Material boardMaterial(&shader, { board_Diffuse }, 32.0f);
 	Material bagMat(&shader, { bag_Diffuse, bag_Specular }, 8.0f);
 	Material grassMat(&shader, { c_Grass }, 8.0f);
 	Material grassM(&shader, { grass }, 8.0f);
-	Material windowMat(&shader, { windowTex }, 16.0f, Transparent);
+	Material windowMat(&shader, { windowTex }, 16.0f, SurfaceType::Transparent);
+	windowMat.cullMode = CullMode::None;
+	grassM.cullMode = CullMode::None;
 	//iron.shaderRef = &lightShader;
 	Material lightMat(&lightShader, {}, 0.0f);
 	Mesh cubeMesh(cubeVerts, cubeInds, iron);
@@ -224,7 +276,7 @@ int main()
 	Model buildingModel("Assets/Models/House.fbx", Transform(glm::vec3(0.0f, 1.5f, 0.0f)));
 	Model grassPlaneModel("Assets/Models/GrassGround.fbx", Transform(glm::vec3(0.0f, -0.5f, 0.0f)));
 	//Model grassModel("Assets/Models/Grass.fbx", Transform(glm::vec3(0.0f, 0.0f, -2.0f)));
-	grassPlaneModel.transform.scale = glm::vec3(0.5f);
+	grassPlaneModel.transform.scale = glm::vec3(0.005f);
 	//grassPlaneModel.meshes[0].SetMaterial(grassMat);
 
 	buildingModel.transform.scale = glm::vec3(0.005f);
@@ -268,7 +320,7 @@ int main()
 
 	Transform lightTransform(pos);
 	PointLight light(pointLights, lightTransform, amb, diff, spec, cons, lin, quad);
-	DirectionalLight globalLight(directionalLights, lightTransform, glm::vec3(0.1f), glm::vec3(0.25f), glm::vec3(0.0f));
+	DirectionalLight globalLight(directionalLights, lightTransform, glm::vec3(0.15f), glm::vec3(0.35f), glm::vec3(0.0f));
 
 	Shader PostProcess("Default_Shaders/PostPass.shader");
 	
@@ -276,7 +328,21 @@ int main()
 	ScreenQuad screenQuad;
 
 
+	RenderPipeline renderPipiline;
+	renderPipiline.AddModel(windowModel);
+	renderPipiline.AddModel(windowModel2);
+	renderPipiline.AddModel(windowModel3);
+	renderPipiline.AddModel(brickCubeModel);
+	renderPipiline.AddModel(buildingModel);
+	renderPipiline.AddModel(cubeModel);
+	renderPipiline.AddModel(grassMT);
+	renderPipiline.AddModel(grassPlaneModel);
+	renderPipiline.SetCamera(&camera);
 	std::cout << glGetString(GL_VERSION) << std::endl;
+
+
+	std::vector<float> frameTimes;
+	const int maxSamples = 1000;
 
 
 	// Update
@@ -285,7 +351,11 @@ int main()
 		currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		fpsUpdateTimer += deltaTime;
+
+		frameTimes.push_back(deltaTime);
+		if (frameTimes.size() > maxSamples)
+			frameTimes.erase(frameTimes.begin());
+
 		if (fpsUpdateTimer >= 0.25f)
 		{ // update every 0.25s
 			fps = 1.0f / deltaTime;
@@ -295,12 +365,19 @@ int main()
 
 		ProcessInput(window, camera, deltaTime);
 
+
+
 		//Scene OR Pre Pass
 		frameBuffer.Bind();
-		glEnable(GL_DEPTH_TEST);
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		camera.BindToShader(skyboxShader, glm::mat4(1.0f), screenWidth / screenHeight);
+		skybox.Draw();
+		
+		glEnable(GL_DEPTH_TEST);
+
 
 		debugUI.BeginFrame();
 		debugUI.RenderUI();
@@ -311,27 +388,19 @@ int main()
 		updateLightPos.x = 1.0f * cos(glfwGetTime());
 		updateLightPos.z = 1.0f * sin(glfwGetTime());
 
-		shader.Use();
-
-
-		shader.SetVec3("viewPos", camera.transform.position);
 
 		glm::mat4 model = glm::mat4(1.0f);
 		camera.BindToShader(shader, model, screenWidth / screenHeight);
-		//iron.Apply(shader);
-		//light.SetPosition(updateLightPos);
 
 
 
-		brickCubeModel.Draw();
-		buildingModel.Draw();
-		cubeModel.Draw();
-		grassPlaneModel.Draw();
-		grassMT.Draw();
 
-		windowModel.Draw();
-		windowModel2.Draw();
-		windowModel3.Draw();
+		shader.Use();
+		shader.SetVec3("viewPos", camera.transform.position);
+		//brickCubeModel.Draw();
+		renderPipiline.DrawAll();
+		//renderPipiline.DrawOpaque(camera);
+		//renderPipiline.DrawTransparent(camera);
 
 
 
@@ -362,6 +431,24 @@ int main()
 		PostProcess.SetInt("screenTex", 0);
 
 		screenQuad.Draw();
+
+
+
+		PerfStats stats = CalculatePerfStats(frameTimes);
+
+		ImGui::SetNextWindowPos(ImVec2(1700, 850));
+		ImGui::SetNextWindowBgAlpha(0.35f);
+		ImGui::Begin("PerfOverlay", nullptr,
+			ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
+			ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+		ImGui::Text("FPS: %.1f", stats.fps);
+		ImGui::Text("Frame Time: %.2f ms", stats.frameTimeMs);
+		ImGui::Text("1%% Low FPS: %.1f", stats.fps1Low);
+		ImGui::Text("0.1%% Low FPS: %.1f", stats.fps01Low);
+
+		ImGui::End();
+
 
 
 
@@ -467,4 +554,6 @@ void Mouse_callback(GLFWwindow* window, Camera& camera,
 		camera.SetRotation(newRot);
 	}
 }
+
+
 

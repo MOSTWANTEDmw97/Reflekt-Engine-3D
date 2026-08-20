@@ -1,7 +1,8 @@
 #include<imgui.h>
 #include<imgui_impl_opengl3.h>
 #include<imgui_impl_glfw.h>
-
+#include<stdio.h>
+#include<vector>
 #include"UI/IMGUI/IMGUI_DebugUI.h"
 
 void IMGUI_DebugUI::Init(GLFWwindow* window)
@@ -40,6 +41,7 @@ void IMGUI_DebugUI::RenderUI()
 		inspectors[selectedIndex]();
 	}
 	ImGui::End();
+
 }
 
 void IMGUI_DebugUI::EndFrame()
@@ -54,3 +56,4 @@ void IMGUI_DebugUI::Shutdown()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 }
+

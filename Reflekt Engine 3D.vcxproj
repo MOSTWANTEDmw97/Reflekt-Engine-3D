@@ -24,6 +24,7 @@
     <ProjectGuid>{995223ab-47be-4856-8971-cebe5f0ac5a5}</ProjectGuid>
     <RootNamespace>OpenGLRenderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Reflekt Engine 3D</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -172,7 +173,9 @@
     <ClCompile Include="External\IMGUI\src\imgui_widgets.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\GLBuffers\FBO.cpp" />
+    <ClCompile Include="src\Graphics\Cubemap.cpp" />
     <ClCompile Include="src\Graphics\ShaderManager.cpp" />
+    <ClCompile Include="src\Rendering\RenderPipeline.cpp" />
     <ClCompile Include="src\Rendering\ScreenQuad.cpp" />
     <ClCompile Include="src\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\DirectionalLightManager.cpp" />
@@ -188,6 +191,7 @@
     <ClCompile Include="src\Lighting\Light_Managers\SpotLightManager.cpp" />
     <ClCompile Include="src\GLBuffers\SSBO.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
+    <ClCompile Include="src\Rendering\Skybox.cpp" />
     <ClCompile Include="src\UI\IMGUI\IMGUI_DebugUI.cpp" />
     <ClCompile Include="src\GLBuffers\VAO.cpp" />
     <ClCompile Include="src\GLBuffers\VBO.cpp" />
@@ -195,7 +199,9 @@
   <ItemGroup>
     <ClInclude Include="Headers\Camera.h" />
     <ClInclude Include="Headers\GLBuffers\FBO.h" />
+    <ClInclude Include="Headers\Graphics\Cubemap.h" />
     <ClInclude Include="Headers\Graphics\ShaderManager.h" />
+    <ClInclude Include="Headers\Rendering\RenderPipeline.h" />
     <ClInclude Include="Headers\Rendering\ScreenQuad.h" />
     <ClInclude Include="Headers\Lighting\DirectionalLight.h" />
     <ClInclude Include="Headers\GLBuffers\EBO.h" />
@@ -211,6 +217,7 @@
     <ClInclude Include="Headers\GLBuffers\SSBO.h" />
     <ClInclude Include="Headers\Graphics\Texture.h" />
     <ClInclude Include="Headers\Math\Transform.h" />
+    <ClInclude Include="Headers\Rendering\Skybox.h" />
     <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h" />
     <ClInclude Include="Headers\GLBuffers\VAO.h" />
     <ClInclude Include="Headers\GLBuffers\VBO.h" />
@@ -225,6 +232,7 @@
     <None Include="Default_Shaders\Legacy\Default.vert.glsl" />
     <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
     <None Include="Default_Shaders\PostPass.shader" />
+    <None Include="Default_Shaders\Skybox.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

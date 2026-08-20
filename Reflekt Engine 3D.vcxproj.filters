@@ -99,6 +99,15 @@
     <ClCompile Include="src\Graphics\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\RenderPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Cubemap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Graphics\Shader.h">
@@ -167,6 +176,15 @@
     <ClInclude Include="Headers\Graphics\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Rendering\RenderPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Graphics\Cubemap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Rendering\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Default.frag.glsl">
@@ -181,5 +199,6 @@
     <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
     <None Include="Default_Shaders\default.shader" />
     <None Include="Default_Shaders\PostPass.shader" />
+    <None Include="Default_Shaders\Skybox.shader" />
   </ItemGroup>
 </Project>
