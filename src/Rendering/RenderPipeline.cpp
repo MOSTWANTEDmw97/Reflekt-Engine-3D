@@ -1,19 +1,44 @@
 #include"Rendering/RenderPipeline.h"
 #include<algorithm>
 #include<glad/glad.h>
+#include<iostream>
 
-void RenderPipeline::AddModel(Model& model)
+//Both instanced and non instanced
+void RenderPipeline::AddModel(Model& model, const bool isInstanced, const std::vector<glm::mat4>& transforms)
 {
-    for (const Mesh& mesh : model.GetMeshes())
+    for (Mesh& mesh : model.GetMeshes())
     {
-        if (mesh.GetMaterial().surfaceType == SurfaceType::Transparent)
+        if (!isInstanced)
         {
-            transparentQueue.push_back(&model);
+            RenderEntry entry(&model, {}, false);
+
+            if (mesh.GetMaterial().surfaceType == SurfaceType::Transparent)
+            {
+                transparentQueue.push_back(entry);
+            }
+            else
+            {
+                opaqueQueue.push_back(entry);
+            }
         }
-        else
+
+        else if (isInstanced)
         {
-            opaqueQueue.push_back(&model);
+            RenderEntry entry(&model, transforms, true);
+            for (Mesh& mesh : model.GetMeshes())
+            {
+                mesh.SetupInstanceBuffer(transforms);
+            }
+            if (mesh.GetMaterial().surfaceType == SurfaceType::Transparent)
+            {
+                transparentQueue.push_back(entry);
+            }
+            else
+            {
+                opaqueQueue.push_back(entry);
+            }
         }
+        //std::cout << "Entry instanced: " << isInstanced << std::endl;
     }
 }
 
@@ -22,9 +47,17 @@ void RenderPipeline::DrawOpaque()
     //glDisable(GL_BLEND);
     //glDepthMask(GL_TRUE);
 
-    for (Model* model : opaqueQueue)
+    for (auto& entry : opaqueQueue)
     {
-        model->Draw();
+        if (entry.instanced)
+        {
+            entry.model->DrawInstanced(entry.instanceTransforms);
+        }
+        else
+        {
+            entry.model->Draw();
+        }
+        //std::cout << "Draw instance: " << entry.instanced << std::endl;
     }
 
 }
@@ -32,19 +65,26 @@ void RenderPipeline::DrawOpaque()
 void RenderPipeline::DrawTransparent()
 {
     std::sort(transparentQueue.begin(), transparentQueue.end(),
-        [&](Model* a, Model* b)
+        [&](RenderEntry a, RenderEntry b)
         {
-            float distA = glm::length(activeCamera->transform.position - a->transform.position);
-            float distB = glm::length(activeCamera->transform.position - b->transform.position);
+            float distA = glm::length(activeCamera->transform.position - a.model->transform.position);
+            float distB = glm::length(activeCamera->transform.position - b.model->transform.position);
             return distA > distB; // farthest first
         });
 
     //glEnable(GL_BLEND);
     //glDepthMask(GL_FALSE);
 
-    for (Model* model : transparentQueue)
+    for (auto entry : transparentQueue)
     {
-        model->Draw();
+        if (entry.instanced)
+        {
+            entry.model->DrawInstanced(entry.instanceTransforms);
+        }
+        else
+        {
+            entry.model->Draw();
+        }
     }
 
     // Restore state

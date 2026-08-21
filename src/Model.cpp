@@ -29,6 +29,19 @@ void Model::Draw()
 	}
 }
 
+void Model::DrawInstanced(const std::vector<glm::mat4>& transforms)
+{
+	glm::mat4 modelMatrix = transform.GetModelMatrix();
+	for (Mesh& mesh : meshes)
+	{
+		//mesh.SetupInstanceBuffer(transforms);
+		mesh.GetMaterial().shaderRef->SetMat4("model", modelMatrix);
+		mesh.DrawInstanced(static_cast<GLsizei>(transforms.size()));
+		
+
+	}
+}
+
 void Model::Delete()
 {
 	for (Mesh& mesh : meshes)

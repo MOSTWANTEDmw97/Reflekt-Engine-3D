@@ -24,6 +24,8 @@ class Mesh
 
 		Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, Material mat, GLenum drawType = GL_STATIC_DRAW);
 		void Draw();
+		void DrawInstanced(GLsizei instanceCount);
+		void SetupInstanceBuffer(const std::vector<glm::mat4>& transforms);
 		void Delete();
 
 		void SetMaterial(const Material& mat) { material = mat; }
@@ -40,6 +42,7 @@ class Mesh
 		VAO vao;
 		VBO* vbo;
 		EBO* ebo;
+		VBO* instanceVBO = nullptr;
 		GLsizei indexCount;
 };
 

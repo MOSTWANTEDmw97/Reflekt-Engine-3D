@@ -249,6 +249,29 @@ int main()
 	grassPlaneModel.transform.scale = glm::vec3(0.005f);
 	//grassPlaneModel.meshes[0].SetMaterial(grassMat);
 
+	//Instance transforms
+	std::vector<glm::mat4> transforms;
+	int instanceCount = 100;
+
+	int gridSize = static_cast<int>(sqrt(instanceCount));
+
+	for (int i = 0; i < instanceCount; i++)
+	{
+		int row = i / gridSize;   // Z axis
+		int col = i % gridSize;   // X axis
+
+		glm::vec3 pos = glm::vec3((float)col, 0.0f, (float)row);
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
+
+		// optional: random rotation for grass
+		float angle = (rand() % 360);
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		transforms.push_back(model);
+	}
+
+
+
 	buildingModel.transform.scale = glm::vec3(0.005f);
 	DebugUI_Register_Object(buildingModel);
 	DebugUI_Register_Object(brickCubeModel);
@@ -257,7 +280,7 @@ int main()
 	DebugUI_Register_Object(windowModel);
 	DebugUI_Register_Object(windowModel2);
 	DebugUI_Register_Object(windowModel3);
-	//DebugUI_Register_Object(grassModel);
+	DebugUI_Register_Object(grassMT);
 
 
 	brickCubeModel.transform.scale = glm::vec3(0.005f);
@@ -300,13 +323,24 @@ int main()
 		glm::vec2(1.0f, 1.1f)
 	);
 
+	Light dirLight(
+		lightManager,
+		LightType::directionalLight,
+		lightModel.transform,
+		glm::vec3(0.0f, -0.8f, 0.5f),
+		glm::vec3(1.0f),
+		0.2f,
+		glm::vec3(1.0f),
+		glm::vec2(1.0f)
+	);
+
 	Shader PostProcess("Default_Shaders/PostPass.shader");
 	
 	
 	ScreenQuad screenQuad;
 
-
 	RenderPipeline renderPipiline;
+	renderPipiline.AddModel(grassMT, true, transforms);
 	renderPipiline.AddModel(windowModel);
 	renderPipiline.AddModel(windowModel2);
 	renderPipiline.AddModel(windowModel3);
@@ -377,7 +411,9 @@ int main()
 
 		shader.Use();
 		shader.SetVec3("viewPos", camera.transform.position);
+		shader.SetFloat("time", currentFrame);
 		//brickCubeModel.Draw();
+		//grassMT.DrawInstanced(transforms);
 		renderPipiline.DrawAll();
 		//renderPipiline.DrawOpaque(camera);
 		//renderPipiline.DrawTransparent(camera);
@@ -411,13 +447,6 @@ int main()
 		PostProcess.SetInt("screenTex", 0);
 
 		screenQuad.Draw();
-
-
-
-
-
-
-
 
 		debugUI.EndFrame();
 		glfwSwapBuffers(window);

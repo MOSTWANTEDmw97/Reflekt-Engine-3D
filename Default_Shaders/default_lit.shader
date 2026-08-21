@@ -2,14 +2,18 @@
 #version 460 core
 
 layout (location = 0) in vec3 aPos; // vert position
-layout (location = 1) in vec3 aNormal;
+layout (location = 1) in vec3 aNormal; //vert normal dir
 layout (location = 2) in vec3 aColor; // vert color
 layout (location = 3) in vec2 aTexCoord; // uv
 
-out vec3 FragPos; //World space pos
-out vec3 Normal; // World space normal dir
-out vec3 VertexColor;
-out vec2 TexCoord;
+
+// Instancing: mat4 takes up 4 attribute slots (4–7)
+layout (location = 4) in mat4 instanceModel;
+
+out vec3 vFragPos; //World space pos
+out vec3 vNormal; // World space normal dir
+out vec3 vVertexColor;
+out vec2 vTexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -17,13 +21,64 @@ uniform mat4 projection;
 
 void main()
 {
-	FragPos = vec3(model * vec4(aPos, 1.0));
-	Normal = mat3(transpose(inverse(model))) * aNormal;
+    //Safeguard for supporting instanced and non instanced models
+    mat4 finalModel = instanceModel;
+    if (gl_InstanceID == 0 && model != mat4(0.0)) 
+    {
+        finalModel = model;
+    }
+    
+	vFragPos = vec3(finalModel * vec4(aPos, 1.0));
+	vNormal = mat3(transpose(inverse(model))) * aNormal;
 	
-	VertexColor = aColor;
-	TexCoord = aTexCoord;
+	vVertexColor = aColor;
+	vTexCoord = aTexCoord;
 
-	gl_Position = projection * view * vec4(FragPos, 1.0);
+	gl_Position = projection * view * vec4(vFragPos, 1.0);
+}
+
+
+#SHADER GEOMETRY
+#version 460 core
+
+layout(triangles) in;                               // input primitive type
+layout(triangle_strip, max_vertices = 3) out;       // output type
+
+in vec3 vFragPos[];      // from vertex shader (array because multiple verts per primitive)
+in vec3 vNormal[];       
+in vec3 vVertexColor[];
+in vec2 vTexCoord[];
+
+out vec3 FragPos;      // pass to fragment shader
+out vec3 Normal;
+out vec3 VertexColor;
+out vec2 TexCoord;
+
+uniform float time;
+
+void main()
+{
+    
+    // Compute a face normal (average of the three vertex normals)
+    vec3 faceNormal = normalize(vNormal[0] + vNormal[1] + vNormal[2]);
+
+    // Explosion factor oscillates with time
+    float explode = sin(time) * 0.5; // tweak multiplier for strength
+
+    for (int i = 0; i < 3; i++)
+    {
+        // Push each vertex outward along the face normal
+        //vec4 displacedPos = gl_in[i].gl_Position + vec4(faceNormal * explode, 0.0);
+
+        FragPos     = vFragPos[i] + faceNormal * explode;
+        Normal      = vNormal[i];
+        VertexColor = vVertexColor[i];
+        TexCoord    = vTexCoord[i];
+        gl_Position = gl_in[i].gl_Position;
+
+        EmitVertex();
+    }
+    EndPrimitive();
 }
 
 

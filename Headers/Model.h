@@ -29,9 +29,10 @@ class Model
 		Model(const std::string& path, const Transform& initialTransform = Transform());
 
 		void Draw();
+		void DrawInstanced(const std::vector<glm::mat4>& transforms);
 		void Delete();
 
-		const std::vector<Mesh>& GetMeshes() const { return meshes; }
+		std::vector<Mesh>& GetMeshes() { return meshes; }
 
 		//std::string GetName() const { return "Model"; }
 		void DrawInspector()

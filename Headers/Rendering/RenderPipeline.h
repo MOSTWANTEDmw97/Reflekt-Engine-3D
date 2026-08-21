@@ -6,14 +6,21 @@
 #include"Model.h"
 #include"Camera.h"
 
+struct RenderEntry
+{
+	Model* model;
+	std::vector<glm::mat4> instanceTransforms;
+	bool instanced = false;
+};
+
 class RenderPipeline
 {
 	const Camera* activeCamera = nullptr;
 	public:
-		std::vector<Model*> opaqueQueue;
-		std::vector<Model*> transparentQueue;
+		std::vector<RenderEntry> opaqueQueue;
+		std::vector<RenderEntry> transparentQueue;
 
-		void AddModel(Model& model);
+		void AddModel(Model& model, const bool isInstanced = false, const std::vector<glm::mat4>& transforms = {});
 		void SetCamera(const Camera* camera) { activeCamera = camera; }
 		void DrawAll();
 		void DrawOpaque();
