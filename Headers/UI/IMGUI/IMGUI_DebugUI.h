@@ -14,6 +14,8 @@ class IMGUI_DebugUI
 		void Init(GLFWwindow* window);
 		void BeginFrame();
 		void RenderUI();
+		void RenderPerfMetrics(const std::vector<float>& frameTime);
+		void RenderCameraPosition(glm::vec3 pos);
 		void EndFrame();
 		void Shutdown();
 

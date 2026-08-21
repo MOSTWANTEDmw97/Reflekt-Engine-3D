@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Reflekt Engine 3D.vcxproj" />
+  <Project Path="Reflekt Engine 3D.vcxproj" Id="995223ab-47be-4856-8971-cebe5f0ac5a5" />
 </Solution>

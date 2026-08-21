@@ -26,6 +26,7 @@ void RenderPipeline::DrawOpaque()
     {
         model->Draw();
     }
+
 }
 
 void RenderPipeline::DrawTransparent()

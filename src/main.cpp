@@ -10,9 +10,8 @@
 #include"Camera.h"
 #include"Model.h"
 #include"Graphics/ShaderManager.h"
-#include"Lighting/DirectionalLight.h"
-#include"Lighting/PointLight.h"
-#include"Lighting/SpotLight.h"
+#include"Lighting/Light.h"
+
 #include"UI/IMGUI/IMGUI_DebugUI.h"
 #include"Rendering/ScreenQuad.h"
 #include"Rendering/RenderPipeline.h"
@@ -35,35 +34,6 @@ void ProcessInput(GLFWwindow* window, Camera& camera, float deltaTime);
 void Mouse_callback(GLFWwindow* window, Camera& camera, float window_Width, float window_Height, bool enableCameraLook);
 
 
-struct PerfStats
-{
-	float fps;
-	float frameTimeMs;
-	float fps1Low;
-	float fps01Low;
-};
-
-PerfStats CalculatePerfStats(const std::vector<float>& frameTimes)
-{
-	PerfStats stats{};
-	if (frameTimes.empty()) return stats;
-
-	float latest = frameTimes.back();
-	stats.fps = 1.0f / latest;
-	stats.frameTimeMs = latest * 1000.0f;
-
-	std::vector<float> sorted = frameTimes;
-	std::sort(sorted.begin(), sorted.end());
-	int n = (int)sorted.size();
-
-	float p99 = sorted[(int)(n * 0.99f)];
-	float p999 = sorted[(int)(n * 0.999f)];
-
-	stats.fps1Low = 1.0f / p99;
-	stats.fps01Low = 1.0f / p999;
-
-	return stats;
-}
 
 int main()
 {
@@ -80,7 +50,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Renderer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "Reflekt Engine 3D", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -208,7 +178,7 @@ int main()
 
 	//Shader
 	//Shader shader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/Default.frag.glsl");
-	Shader shader("Default_Shaders/Default.shader");
+	Shader shader("Default_Shaders/default_lit.shader");
 	Shader lightShader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/LightSource.frag.glsl");
 	ShaderManager::Register(shader, "default");
 	ShaderManager::Register(lightShader, "light");
@@ -239,7 +209,7 @@ int main()
 	Shader skyboxShader("Default_Shaders/Skybox.shader");
 	Skybox skybox(&skyboxCubemap, &skyboxShader);
 
-	Material iron(&shader, { container_Diffuse, container_Spec }, 2.0f);
+	Material iron(&shader, { container_Diffuse, container_Spec }, 32.0f);
 	Material leafMaterial(&shader, { leaf }, 32.0f);
 	Material boardMaterial(&shader, { board_Diffuse }, 32.0f);
 	Material bagMat(&shader, { bag_Diffuse, bag_Specular }, 8.0f);
@@ -304,11 +274,7 @@ int main()
 	glm::vec3 lightPos = glm::vec3(1.0f, 0.0f, 0.5f);
 	glm::vec3 lightDir = glm::vec3(1.0f, 0.45f, 0.25f);
 
-	//Light
-	DirectionalLightManager directionalLights(0);
-	PointLightManager pointLights(1);
-	SpotLightManager spotLights(2);
- 
+
 	glm::vec3 pos = glm::vec3(-2.0f, 1.0f, -0.5f);
 	glm::vec3 amb = glm::vec3(0.2f);
 	glm::vec3 diff = glm::vec3(0.5f);
@@ -319,8 +285,20 @@ int main()
 	lightModel.transform.position = pos;
 
 	Transform lightTransform(pos);
-	PointLight light(pointLights, lightTransform, amb, diff, spec, cons, lin, quad);
-	DirectionalLight globalLight(directionalLights, lightTransform, glm::vec3(0.15f), glm::vec3(0.35f), glm::vec3(0.0f));
+
+
+	LightManager lightManager;
+	//Light pointLight(lightManager, lightModel.transform, 2, diff, 1.0f, glm::vec3(1.0f, 0.9f, 0.34f), glm::vec2(1.0f));
+	Light pointLight(
+		lightManager,
+		LightType::pointLight,
+		lightModel.transform,
+		glm::vec3(0.0f, -1.0f, 0.0),
+		glm::vec3(1.0f, 1.0f, 1.0f),       // color (reddish)
+		1.0f,                              // intensity
+		glm::vec3(1.0f, 0.09f, 0.032f),     // attenuation (constant, linear, quadratic)
+		glm::vec2(1.0f, 1.1f)
+	);
 
 	Shader PostProcess("Default_Shaders/PostPass.shader");
 	
@@ -381,6 +359,8 @@ int main()
 
 		debugUI.BeginFrame();
 		debugUI.RenderUI();
+		debugUI.RenderPerfMetrics(frameTimes);
+		debugUI.RenderCameraPosition(camera.transform.position);
 		
 
 		
@@ -434,20 +414,7 @@ int main()
 
 
 
-		PerfStats stats = CalculatePerfStats(frameTimes);
 
-		ImGui::SetNextWindowPos(ImVec2(1700, 850));
-		ImGui::SetNextWindowBgAlpha(0.35f);
-		ImGui::Begin("PerfOverlay", nullptr,
-			ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
-			ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
-
-		ImGui::Text("FPS: %.1f", stats.fps);
-		ImGui::Text("Frame Time: %.2f ms", stats.frameTimeMs);
-		ImGui::Text("1%% Low FPS: %.1f", stats.fps1Low);
-		ImGui::Text("0.1%% Low FPS: %.1f", stats.fps01Low);
-
-		ImGui::End();
 
 
 
@@ -458,9 +425,7 @@ int main()
 	}
 	lightShader.Delete();
 	shader.Delete();
-	pointLights.DeleteBuffer();
-	directionalLights.DeleteBuffer();
-	spotLights.DeleteBuffer();
+	lightManager.DeleteBuffer();
 
 	debugUI.Shutdown();
 	glfwTerminate();

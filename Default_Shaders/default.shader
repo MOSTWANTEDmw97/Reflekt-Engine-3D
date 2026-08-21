@@ -39,10 +39,6 @@ out vec4 FragColor;
 
 //Uniforms
 uniform vec3 viewPos; // Camera pos
-uniform vec3 fogColor;
-uniform float fogNear;
-uniform float fogFar;
-uniform float fogDensity;
 
 struct Material
 {
@@ -51,6 +47,7 @@ struct Material
 	float shininess;
 };
 uniform Material material;
+
 
 struct DirectionalLight {
 	// W unused for now
