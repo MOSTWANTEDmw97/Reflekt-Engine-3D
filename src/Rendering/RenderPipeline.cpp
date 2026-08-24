@@ -4,15 +4,16 @@
 #include<iostream>
 
 //Both instanced and non instanced
-void RenderPipeline::AddModel(Model& model, const bool isInstanced, const std::vector<glm::mat4>& transforms)
+void RenderPipeline::AddMeshRenderer(MeshRenderer& meshRenderer, const bool isInstanced, const std::vector<glm::mat4>& transforms)
 {
-    for (Mesh& mesh : model.GetMeshes())
+
+    for (Mesh& mesh : meshRenderer.model->GetMeshes())
     {
         if (!isInstanced)
         {
-            RenderEntry entry(&model, {}, false);
+            RenderEntry entry(&meshRenderer, {}, false);
 
-            if (mesh.GetMaterial().surfaceType == SurfaceType::Transparent)
+            if (meshRenderer.GetMaterial().surfaceType == SurfaceType::Transparent)
             {
                 transparentQueue.push_back(entry);
             }
@@ -24,12 +25,12 @@ void RenderPipeline::AddModel(Model& model, const bool isInstanced, const std::v
 
         else if (isInstanced)
         {
-            RenderEntry entry(&model, transforms, true);
-            for (Mesh& mesh : model.GetMeshes())
+            RenderEntry entry(&meshRenderer, transforms, true);
+            for (Mesh& mesh : meshRenderer.model->GetMeshes())
             {
                 mesh.SetupInstanceBuffer(transforms);
             }
-            if (mesh.GetMaterial().surfaceType == SurfaceType::Transparent)
+            if (meshRenderer.GetMaterial().surfaceType == SurfaceType::Transparent)
             {
                 transparentQueue.push_back(entry);
             }
@@ -38,37 +39,29 @@ void RenderPipeline::AddModel(Model& model, const bool isInstanced, const std::v
                 opaqueQueue.push_back(entry);
             }
         }
-        //std::cout << "Entry instanced: " << isInstanced << std::endl;
+       // std::cout << "Entry instanced: " << opaqueQueue.size() << std::endl;
     }
 }
 
-void RenderPipeline::DrawOpaque()
+void RenderPipeline::DrawOpaque(Shader* overrideShader)
 {
     //glDisable(GL_BLEND);
     //glDepthMask(GL_TRUE);
 
     for (auto& entry : opaqueQueue)
     {
-        if (entry.instanced)
-        {
-            entry.model->DrawInstanced(entry.instanceTransforms);
-        }
-        else
-        {
-            entry.model->Draw();
-        }
-        //std::cout << "Draw instance: " << entry.instanced << std::endl;
+        entry.meshRenderer->Draw(overrideShader);
     }
 
 }
 
-void RenderPipeline::DrawTransparent()
+void RenderPipeline::DrawTransparent(Shader* overrideShader)
 {
     std::sort(transparentQueue.begin(), transparentQueue.end(),
         [&](RenderEntry a, RenderEntry b)
         {
-            float distA = glm::length(activeCamera->transform.position - a.model->transform.position);
-            float distB = glm::length(activeCamera->transform.position - b.model->transform.position);
+            float distA = glm::length(activeCamera->transform.position - a.meshRenderer->gameObject->transform.position);
+            float distB = glm::length(activeCamera->transform.position - b.meshRenderer->gameObject->transform.position);
             return distA > distB; // farthest first
         });
 
@@ -77,14 +70,7 @@ void RenderPipeline::DrawTransparent()
 
     for (auto entry : transparentQueue)
     {
-        if (entry.instanced)
-        {
-            entry.model->DrawInstanced(entry.instanceTransforms);
-        }
-        else
-        {
-            entry.model->Draw();
-        }
+        entry.meshRenderer->Draw(overrideShader);
     }
 
     // Restore state
@@ -92,8 +78,8 @@ void RenderPipeline::DrawTransparent()
     //glDisable(GL_BLEND);
 }
 
-void RenderPipeline::DrawAll()
+void RenderPipeline::DrawAll(Shader* overrideShader)
 {
-    DrawOpaque();
-    DrawTransparent();
+    DrawOpaque(overrideShader);
+    DrawTransparent(overrideShader);
 }

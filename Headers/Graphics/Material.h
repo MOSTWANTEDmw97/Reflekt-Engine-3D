@@ -10,6 +10,7 @@ enum SurfaceType{Opaque, Transparent};
 enum BlendMode{Alpha, PreMultiply, Additive, Multiply};
 enum CullMode{Back, Front, None};
 
+
 class Material
 {
 public:
@@ -20,6 +21,8 @@ public:
 	BlendMode blendMode;
 	CullMode cullMode;
 	int renderQueue;
+	bool castShadow;
+	bool reciveShadow;
 
 	//Material() : shininess(32.0f) {} // Default
 	Material(Shader* shader, const std::vector<Texture>& textures, float shininess = 32.0f,
@@ -27,7 +30,7 @@ public:
 		BlendMode blendMode = BlendMode::Alpha,
 		CullMode cullMode = CullMode::Back);
 	
-	void Apply();
+	void Apply(Shader* overrideShader = nullptr);
 	
 };
 #endif // !MATERIAL_H

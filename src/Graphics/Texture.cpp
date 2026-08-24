@@ -8,7 +8,7 @@
 // External texture 
 Texture::Texture(const char* imagePath, const std::string& typeName, GLenum format, GLenum texType, GLenum slot, GLenum pixelType, GLenum filterMode, GLenum wrapMode)
 	:ID(0), 
-	Type(texType),Slot(slot), PixelType(pixelType)
+	Type(texType),Slot(slot), PixelType(pixelType), imagePath(imagePath)
 {
 	std::string typeNameLower = typeName;
 	std::transform(typeNameLower.begin(), typeNameLower.end(), typeNameLower.begin(),
@@ -23,7 +23,7 @@ Texture::Texture(const char* imagePath, const std::string& typeName, GLenum form
 		std::cerr << "Failed to load texture: "<< imagePath << std::endl;
 		return;
 	}
-
+	//std::cout << "Texture name, type: " << imagePath << typeName << std::endl;
 
 	GLenum texFormat = format;
 	if (nrChannels == 1)      texFormat = GL_RED;

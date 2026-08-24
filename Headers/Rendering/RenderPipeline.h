@@ -3,12 +3,13 @@
 #define RENDERPIPELINE_H
 
 #include<vector>
-#include"Model.h"
+#include"MeshRenderer.h"
 #include"Camera.h"
+
 
 struct RenderEntry
 {
-	Model* model;
+	MeshRenderer* meshRenderer;
 	std::vector<glm::mat4> instanceTransforms;
 	bool instanced = false;
 };
@@ -20,12 +21,17 @@ class RenderPipeline
 		std::vector<RenderEntry> opaqueQueue;
 		std::vector<RenderEntry> transparentQueue;
 
-		void AddModel(Model& model, const bool isInstanced = false, const std::vector<glm::mat4>& transforms = {});
-		void SetCamera(const Camera* camera) { activeCamera = camera; }
-		void DrawAll();
-		void DrawOpaque();
-		void DrawTransparent();
+		void AddMeshRenderer(MeshRenderer& meshRenderer, const bool isInstanced = false, const std::vector<glm::mat4>& transforms = {});
 
+		void SetCamera(const Camera* camera) { activeCamera = camera; }
+
+		void DrawAll(Shader* overrideShader = nullptr);
+		void DrawOpaque(Shader* overrideShader = nullptr);
+		void DrawTransparent(Shader* overrideShader = nullptr);
+
+		int ReturnMeshRendererCount() { return static_cast<int>(opaqueQueue.size() + transparentQueue.size());};
+		int ReturnOpaqueQueueCount() { return static_cast<int>(opaqueQueue.size()); };
+		int ReturnTransparentQueueCount() { return static_cast<int>(transparentQueue.size()); };
 
 };
 

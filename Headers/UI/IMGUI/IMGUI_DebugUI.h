@@ -24,7 +24,7 @@ class IMGUI_DebugUI
 		void RegisterObject(T* obj, const std::string& displayName)
 		{
 			names.push_back(displayName);
-			inspectors.push_back([obj]() { obj->DrawInspector(); });
+			//inspectors.push_back([obj]() { obj->DrawInspector(); });
 		}
 
 	private:

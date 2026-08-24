@@ -1,0 +1,92 @@
+#include "Rendering/Deferred_Rendering/GBuffer.h"
+
+GBuffer::GBuffer(int width, int height)
+{
+    glGenFramebuffers(1, &ID);
+    glBindFramebuffer(GL_FRAMEBUFFER, ID);
+
+    // Position
+    glGenTextures(1, &gPosition);
+    glBindTexture(GL_TEXTURE_2D, gPosition);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0,
+        GL_RGB, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+        GL_TEXTURE_2D, gPosition, 0);
+
+    // Normal
+    glGenTextures(1, &gNormal);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0,
+        GL_RGB, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+        GL_TEXTURE_2D, gNormal, 0);
+
+    // Albedo
+    glGenTextures(1, &gAlbedo);
+    glBindTexture(GL_TEXTURE_2D, gAlbedo);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+        GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2,
+        GL_TEXTURE_2D, gAlbedo, 0);
+
+    // Specular
+    glGenTextures(1, &gSpecular);
+    glBindTexture(GL_TEXTURE_2D, gSpecular);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+        GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3,
+        GL_TEXTURE_2D, gSpecular, 0);
+
+    // Tell OpenGL which color attachments to draw into
+    GLuint attachments[4] = {
+        GL_COLOR_ATTACHMENT0,
+        GL_COLOR_ATTACHMENT1,
+        GL_COLOR_ATTACHMENT2,
+        GL_COLOR_ATTACHMENT3
+    };
+    glDrawBuffers(4, attachments);
+
+    // Depth buffer
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+        GL_RENDERBUFFER, rboDepth);
+
+    if (!IsComplete())
+        std::cerr << "ERROR::GBUFFER:: Framebuffer is not complete!" << std::endl;
+    if (IsComplete())
+        std::cout << "GBUFFER: Framebuffer complete" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+GBuffer::~GBuffer()
+{
+    glDeleteTextures(1, &gPosition);
+    glDeleteTextures(1, &gNormal);
+    glDeleteTextures(1, &gAlbedo);
+    glDeleteTextures(1, &gSpecular);
+    glDeleteRenderbuffers(1, &rboDepth);
+    glDeleteFramebuffers(1, &ID);
+}
+
+void GBuffer::BindForGeometryPass()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, ID);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void GBuffer::BindForLightingPass()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default framebuffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}

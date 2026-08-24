@@ -5,8 +5,8 @@
 
 #include"Camera.h"
 
-Camera::Camera(const Transform& t, float fov, float clip_Near, float clip_Far)
-	:transform(t), FOV(fov), Clip_Near(clip_Near), Clip_Far(clip_Far) {}
+Camera::Camera(const Transform& t, float fov, float clip_Near, float clip_Far, Skybox* skybox)
+	:transform(t), FOV(fov), Clip_Near(clip_Near), Clip_Far(clip_Far), skybox(skybox) {}
 
 glm::mat4 Camera::GetViewMatrix() const
 {

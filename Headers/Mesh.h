@@ -22,21 +22,19 @@ class Mesh
 {
 	public:
 
-		Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, Material mat, GLenum drawType = GL_STATIC_DRAW);
+		Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, std::vector<Texture> textures  = {}, GLenum drawType = GL_STATIC_DRAW);
 		void Draw();
 		void DrawInstanced(GLsizei instanceCount);
 		void SetupInstanceBuffer(const std::vector<glm::mat4>& transforms);
 		void Delete();
 
-		void SetMaterial(const Material& mat) { material = mat; }
-
 		const std::vector<Vertex>& GetVertices() const { return vertices; }
 		const std::vector<unsigned int>& GetIndices() const { return indices; }
-		const Material& GetMaterial() const { return material; }
+		const std::vector<Texture>& GetTextures() const { return textures; }
 
 	private:
 		void SetupMesh(GLenum drawType);
-		Material material;
+		std::vector<Texture> textures;
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 		VAO vao;

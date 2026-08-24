@@ -14,6 +14,7 @@ class Texture
 		GLuint Slot;
 		GLuint PixelType;
 		std::string type; //Usage, diffuse, specular
+		const char* imagePath;
 
 		//External texture from file
 		Texture(const char* imagePath,

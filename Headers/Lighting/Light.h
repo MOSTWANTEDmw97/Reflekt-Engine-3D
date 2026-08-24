@@ -4,12 +4,25 @@
 
 #include"Lighting/Light_Managers/LightManager.h"
 #include"Math/Transform.h"
+#include"Graphics/Shader.h"
 
 enum LightType
 {
     directionalLight = 0,
     pointLight = 1,
     spotLight = 2
+};
+
+struct DiffLight
+{
+    glm::vec3 position;
+    glm::vec3 color;
+
+    void UploadToShader(Shader& shader) const
+    {
+        shader.SetVec3("light.position", position);
+        shader.SetVec3("light.color", color);
+    }
 };
 
 class Light
@@ -20,7 +33,9 @@ class Light
             LightType type, // 0 = directional, 1 = point, 2 = spot
             Transform& transform,
             glm::vec3 direction,
-            const glm::vec3& color,
+            const glm::vec3& ambient,
+            const glm::vec3& diffuse,
+            const glm::vec3& specular,
             float intensity,
             const glm::vec3& attenuation = glm::vec3(1.0f, 0.0f, 0.0f),
             const glm::vec2& cutoff = glm::vec2(0.0f, 0.0f));

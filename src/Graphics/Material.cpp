@@ -1,18 +1,22 @@
 #include"Graphics/Material.h"
 
+
 Material::Material(Shader* shader, const std::vector<Texture>& textures, float shininess, SurfaceType surfaceType, BlendMode blendMode, CullMode cullMode)
 	:shaderRef(shader), textures(textures), shininess(shininess), surfaceType(surfaceType),  blendMode(blendMode), cullMode(cullMode) {}
 
-void Material::Apply()
+void Material::Apply(Shader* overrideShader)
 {
-	shaderRef->Use();
+	Shader* active = overrideShader ? overrideShader : shaderRef;
+	active->Use();
+
+	//if(!overrideShader){}
 	for (unsigned int i = 0; i < textures.size(); ++i)
 	{
 		textures[i].TextureSlot(GL_TEXTURE0 + static_cast<GLenum>(i));
 		textures[i].Bind();
-		shaderRef->SetInt("material." + textures[i].type, static_cast<int>(i));
+		active->SetInt("material." + textures[i].type, static_cast<int>(i));
 	}
-	shaderRef->SetFloat("material.shininess", shininess);
+	active->SetFloat("material.shininess", shininess);
 
 
 	switch (cullMode)

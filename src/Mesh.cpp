@@ -1,11 +1,10 @@
 #include"Mesh.h"
 #include<iostream>
 
-Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, Material mat,GLenum drawType)
-	:vertices(std::move(verts)), indices(std::move(inds)), material(std::move(mat)),
+Mesh::Mesh(std::vector<Vertex> verts, std::vector<unsigned int> inds, std::vector<Texture> textures,GLenum drawType)
+	:vertices(std::move(verts)), indices(std::move(inds)), textures(textures),
 	indexCount(static_cast<GLsizei>(indices.size()))
 {
-
 	SetupMesh(drawType);
 }
 
@@ -41,8 +40,6 @@ void Mesh::SetupInstanceBuffer(const std::vector<glm::mat4>& transforms)
 
 void Mesh::Draw()
 {
-	material.Apply();
-
 	vao.Bind();
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 	//std::cout << "Index: " <<indexCount<< std::endl;
@@ -51,7 +48,6 @@ void Mesh::Draw()
 
 void Mesh::DrawInstanced(GLsizei instanceCount)
 {
-	material.Apply();
 	vao.Bind();
 	glDrawElementsInstanced(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0, instanceCount);
 	vao.Unbind();

@@ -13,7 +13,9 @@ struct LightData
     glm::ivec4 type;        // type in .x (0 = directional, 1 = point, 2 = spot)
     glm::vec4 position;     // xyz = position, w unused
     glm::vec4 direction;    // xyz = direction, w unused
-    glm::vec4 color;        // rgb = color, a = intensity
+    glm::vec4 ambient;        // rgb = color, a = intensity
+	glm::vec4 diffuse;
+	glm::vec4 specular;
     glm::vec4 attenuation;  // x = constant, y = linear, z = quadratic, w unused
     glm::vec4 cutoff;       // x = innerCutoff, y = outerCutoff, z/w unused
 };

@@ -1,4 +1,5 @@
 #include<iostream>
+#include<string>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<glm.hpp>
@@ -14,19 +15,24 @@
 
 #include"UI/IMGUI/IMGUI_DebugUI.h"
 #include"Rendering/ScreenQuad.h"
-#include"Rendering/RenderPipeline.h"
+//#include"Rendering/RenderPipeline.h"
 #include"Graphics/Cubemap.h"
 #include"Rendering/Skybox.h"
+#include"Rendering/Deferred_Rendering/DeferredRenderer.h"
+#include"Rendering/Scene/Scene.h"
 
-#include"GLBuffers/FBO.h"
-#include<string>
+//#include"GLBuffers/FBO.h"
+#include"Rendering/RenderSceneFramebuffer.h"
+#include"Rendering/ShadowFramebuffer.h"
 
 #define DebugUI_Register_Object(obj) debugUI.RegisterObject(&obj, #obj)
 //OpenGL 4.6.0
 //GLFW 3.3
 
-float screenWidth = 1920;
-float screenHeight = 1080;
+int screenWidth = 1366;
+int screenHeight = 768;
+
+float depthMapSize = 4096;
 
 // Function declarations
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -69,7 +75,8 @@ int main()
 
 	// Resize frame buffer
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	FBO frameBuffer(screenWidth, screenHeight);
+	RenderSceneFramebuffer sceneFrameBuffer(screenWidth, screenHeight);
+	ShadowFramebuffer shadowFrameBuffer(depthMapSize, depthMapSize);
 
 	IMGUI_DebugUI debugUI;
 	debugUI.Init(window);
@@ -179,9 +186,8 @@ int main()
 	//Shader
 	//Shader shader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/Default.frag.glsl");
 	Shader shader("Default_Shaders/default_lit.shader");
-	Shader lightShader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/LightSource.frag.glsl");
-	ShaderManager::Register(shader, "default");
-	ShaderManager::Register(lightShader, "light");
+	Shader depthMapShader("Default_Shaders/DepthMap.shader");
+	Shader PostProcess("Default_Shaders/PostPass.shader");
 
 	//Model and mesh and mats
 	Texture leaf("Assets/Textures/Leaf.jpeg", "diffuse");
@@ -219,34 +225,27 @@ int main()
 	windowMat.cullMode = CullMode::None;
 	grassM.cullMode = CullMode::None;
 	//iron.shaderRef = &lightShader;
-	Material lightMat(&lightShader, {}, 0.0f);
-	Mesh cubeMesh(cubeVerts, cubeInds, iron);
-	Mesh planeMesh(planeVerts, planeInds, grassM);
+	//Material lightMat(&lightShader, {}, 0.0f);
+	Mesh cubeMesh(cubeVerts, cubeInds);
+	Mesh planeMesh(planeVerts, planeInds);
 
 
 	Transform cubeTransform(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	Model cubeModel({cubeMesh}, cubeTransform);
-	cubeModel.transform.position = glm::vec3(-2.5f, 0.0f, -1.0f);
-	Model lightModel({ cubeMesh }, cubeTransform);
-	lightModel.transform.scale = glm::vec3(0.2f);
-	lightModel.meshes[0].SetMaterial(lightMat);
+	Model cubeModel({cubeMesh});
+	Model lightModel({ cubeMesh });
 	
-	Model grassMT({ planeMesh }, Transform(glm::vec3(0.0f, 0.0f, -2.0f)));
+	Model grassMT({ planeMesh });
 
-	Model windowModel({ planeMesh }, Transform(glm::vec3(1.0f, 0.0f, -2.0f)));
-	Model windowModel2({ planeMesh }, Transform(glm::vec3(1.0f, 0.0f, -2.5f)));
-	Model windowModel3({ planeMesh }, Transform(glm::vec3(1.0f, 0.0f, -3.0f)));
-	windowModel.meshes[0].SetMaterial(windowMat);
-	windowModel2.meshes[0].SetMaterial(windowMat);
-	windowModel3.meshes[0].SetMaterial(windowMat);
+	Model windowModel({ planeMesh });
+	Model windowModel2({ planeMesh });
+	Model windowModel3({ planeMesh });
 
 	Transform backPackTransform(glm::vec3(1.0f, 0.0f, 0.0f));
-	Model brickCubeModel("Assets/Models/BrickCube.fbx", Transform(glm::vec3(2.0f, 0.0f, -1.0f)));
-	Model buildingModel("Assets/Models/House.fbx", Transform(glm::vec3(0.0f, 1.5f, 0.0f)));
-	Model grassPlaneModel("Assets/Models/GrassGround.fbx", Transform(glm::vec3(0.0f, -0.5f, 0.0f)));
+	Model brickCubeModel("Assets/Models/BrickCube.fbx");
+	Model buildingModel("Assets/Models/House.fbx");
+	Model grassPlaneModel("Assets/Models/GrassGround.fbx");
 	//Model grassModel("Assets/Models/Grass.fbx", Transform(glm::vec3(0.0f, 0.0f, -2.0f)));
-	grassPlaneModel.transform.scale = glm::vec3(0.005f);
 	//grassPlaneModel.meshes[0].SetMaterial(grassMat);
 
 	//Instance transforms
@@ -271,20 +270,6 @@ int main()
 	}
 
 
-
-	buildingModel.transform.scale = glm::vec3(0.005f);
-	DebugUI_Register_Object(buildingModel);
-	DebugUI_Register_Object(brickCubeModel);
-	DebugUI_Register_Object(cubeModel);
-	DebugUI_Register_Object(grassPlaneModel);
-	DebugUI_Register_Object(windowModel);
-	DebugUI_Register_Object(windowModel2);
-	DebugUI_Register_Object(windowModel3);
-	DebugUI_Register_Object(grassMT);
-
-
-	brickCubeModel.transform.scale = glm::vec3(0.005f);
-
 	//Camera
 	Transform cameraTransform(glm::vec3(0.0f, 0.0f, -3.0f));
 	float fov = 60.0f;
@@ -305,56 +290,82 @@ int main()
 	float cons = 1.0f;
 	float lin = 0.9f;
 	float quad = 0.34f;
-	lightModel.transform.position = pos;
 
 	Transform lightTransform(pos);
 
 
 	LightManager lightManager;
-	//Light pointLight(lightManager, lightModel.transform, 2, diff, 1.0f, glm::vec3(1.0f, 0.9f, 0.34f), glm::vec2(1.0f));
-	Light pointLight(
-		lightManager,
-		LightType::pointLight,
-		lightModel.transform,
-		glm::vec3(0.0f, -1.0f, 0.0),
-		glm::vec3(1.0f, 1.0f, 1.0f),       // color (reddish)
-		1.0f,                              // intensity
-		glm::vec3(1.0f, 0.09f, 0.032f),     // attenuation (constant, linear, quadratic)
-		glm::vec2(1.0f, 1.1f)
-	);
+	
+	Transform tr(glm::vec3(1.0f));
+
+	glm::vec3 lDIr =
+		glm::vec3(0.0f, -0.5f, 0.5f);
 
 	Light dirLight(
 		lightManager,
 		LightType::directionalLight,
-		lightModel.transform,
-		glm::vec3(0.0f, -0.8f, 0.5f),
+		tr,
+		lDIr,
+		glm::vec3(0.25f),
+		glm::vec3(0.35f),
 		glm::vec3(1.0f),
 		0.2f,
 		glm::vec3(1.0f),
 		glm::vec2(1.0f)
 	);
-
-	Shader PostProcess("Default_Shaders/PostPass.shader");
-	
-	
 	ScreenQuad screenQuad;
 
-	RenderPipeline renderPipiline;
-	renderPipiline.AddModel(grassMT, true, transforms);
-	renderPipiline.AddModel(windowModel);
-	renderPipiline.AddModel(windowModel2);
-	renderPipiline.AddModel(windowModel3);
-	renderPipiline.AddModel(brickCubeModel);
-	renderPipiline.AddModel(buildingModel);
-	renderPipiline.AddModel(cubeModel);
-	renderPipiline.AddModel(grassMT);
-	renderPipiline.AddModel(grassPlaneModel);
-	renderPipiline.SetCamera(&camera);
-	std::cout << glGetString(GL_VERSION) << std::endl;
 
+	DiffLight light;
+	light.position = glm::vec3(0.0f, 2.0f, -2.0f);
+	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	DeferredRenderer deferredRenderer(screenWidth, screenHeight);
+
+	GameObject building;
+	building.AddComponent<MeshRenderer>(buildingModel);
+	building.transform.scale = glm::vec3(0.005f);
+
+	Shader randShad("Default_Shaders/default_Lit.shader");
+	GameObject ironCube;
+	ironCube.AddComponent<MeshRenderer>(cubeModel);
+	ironCube.GetComponent<MeshRenderer>()->SetMaterial(iron);
+	ironCube.GetComponent<MeshRenderer>()->material->shaderRef = &randShad;
+	ironCube.transform.position = glm::vec3(3.0f, 0.0f, 0.0f);
+
+	GameObject brickCube;
+	brickCube.AddComponent<MeshRenderer>(brickCubeModel);
+	brickCube.transform.scale = glm::vec3(0.005f);
+
+	GameObject lightobj;
+	lightobj.AddComponent<LightComponent>(light);
+
+	camera.skybox = &skybox;
+
+	Scene scene;
+	scene.SetCamera(&camera);
+	scene.AddGameObject(ironCube);
+	scene.AddGameObject(brickCube);
+	scene.AddGameObject(building);
+	scene.AddGameObject(lightobj);
+
+	building.transform.position = glm::vec3(0.0f, 0.0f, 10.0f);
+	building.transform.scale = glm::vec3(0.005f);
+	
 
 	std::vector<float> frameTimes;
 	const int maxSamples = 1000;
+
+	glm::vec3 shadowlightPosition(0.0f, 10.0f, -5.0f);
+
+	float depthnear_plane = 1.0f, depthfar_plane = 30.0f;
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, depthnear_plane, depthfar_plane);
+
+
+	glm::mat4 lightView = glm::lookAt(shadowlightPosition, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+	glm::mat4 flipX = glm::scale(glm::mat4(1.0f), glm::vec3(-1, 1, 1));
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView * flipX;
+
 
 
 	// Update
@@ -374,85 +385,30 @@ int main()
 			fpsUpdateTimer = 0.0f;
 		}
 
-
-		ProcessInput(window, camera, deltaTime);
-
-
-
-		//Scene OR Pre Pass
-		frameBuffer.Bind();
-
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		camera.BindToShader(skyboxShader, glm::mat4(1.0f), screenWidth / screenHeight);
-		skybox.Draw();
-		
-		glEnable(GL_DEPTH_TEST);
-
-
 		debugUI.BeginFrame();
 		debugUI.RenderUI();
 		debugUI.RenderPerfMetrics(frameTimes);
 		debugUI.RenderCameraPosition(camera.transform.position);
+
+		ProcessInput(window, camera, deltaTime);
+
+
+		//glEnable(GL_DEPTH_TEST);
+		//glDepthFunc(GL_LESS);
+		//glDepthMask(GL_TRUE);
+		//glCullFace(GL_BACK);
+		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		// 1. Depth pass (shadow map)
 		
 
-		
-		glm::vec3 updateLightPos = glm::vec3(0.0f);
-		updateLightPos.x = 1.0f * cos(glfwGetTime());
-		updateLightPos.z = 1.0f * sin(glfwGetTime());
-
-
-		glm::mat4 model = glm::mat4(1.0f);
-		camera.BindToShader(shader, model, screenWidth / screenHeight);
-
-
-
-
-		shader.Use();
-		shader.SetVec3("viewPos", camera.transform.position);
-		shader.SetFloat("time", currentFrame);
-		//brickCubeModel.Draw();
-		//grassMT.DrawInstanced(transforms);
-		renderPipiline.DrawAll();
-		//renderPipiline.DrawOpaque(camera);
-		//renderPipiline.DrawTransparent(camera);
-
-
-
-		lightShader.Use();
-		glm::mat4 lightModelMat = lightModel.transform.GetModelMatrix();
-		lightModelMat = glm::translate(lightModelMat, updateLightPos);
-
-		camera.BindToShader(lightShader, lightModelMat, screenWidth / screenHeight);
-		lightShader.SetVec3("lightColor", lightColor);
-		lightModel.Draw();
-		//lightModel.transform.position = updateLightPos;
-
-		frameBuffer.Unbind();
-
-
-		// second pass
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_STENCIL_TEST);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default
-		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//Post pass Scene
-		PostProcess.Use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, frameBuffer.colorTex);
-		PostProcess.SetInt("screenTex", 0);
-
-		screenQuad.Draw();
+		camera.BindToShader(*skybox.shader, glm::mat4(1.0f), 1366.0f / 768.0f);
+		skybox.Draw();
+		//deferredRenderer.RenderScene(scene);
 
 		debugUI.EndFrame();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	lightShader.Delete();
 	shader.Delete();
 	lightManager.DeleteBuffer();
 
@@ -460,6 +416,10 @@ int main()
 	glfwTerminate();
 	
 	return 0;
+
+
+
+
 }
 
 
@@ -548,6 +508,5 @@ void Mouse_callback(GLFWwindow* window, Camera& camera,
 		camera.SetRotation(newRot);
 	}
 }
-
 
 

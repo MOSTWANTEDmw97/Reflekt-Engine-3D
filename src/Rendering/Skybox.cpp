@@ -70,6 +70,7 @@ void Skybox::Draw()
     glDepthMask(GL_FALSE);
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
+    glDisable(GL_DEPTH_TEST);
     shader->Use();
     cubemap->Bind(0);
 
@@ -79,5 +80,6 @@ void Skybox::Draw()
 
    glDepthFunc(GL_LESS);
    glDisable(GL_CULL_FACE);
+   glEnable(GL_DEPTH_TEST);
    glDepthMask(GL_TRUE);
 }

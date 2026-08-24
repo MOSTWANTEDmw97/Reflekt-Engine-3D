@@ -10,32 +10,27 @@
 //TODO:
 //Support for multiple meshes and materials in one models 
 
-Model::Model(const std::vector<Mesh>& meshList, const Transform& initialTransform)
-	: meshes(meshList), transform(initialTransform) {}
+Model::Model(const std::vector<Mesh>& meshList)
+	: meshes(meshList) {}
 
-Model::Model(const std::string& path, const Transform& initialTransform)
-	:transform(initialTransform)
+Model::Model(const std::string& path)
 {
 	LoadModel(path);
 }
 
 void Model::Draw()
 {
-	glm::mat4 modelMatrix = transform.GetModelMatrix();
 	for (Mesh& mesh : meshes)
 	{
-		mesh.GetMaterial().shaderRef->SetMat4("model", modelMatrix);
 		mesh.Draw();
 	}
 }
 
 void Model::DrawInstanced(const std::vector<glm::mat4>& transforms)
 {
-	glm::mat4 modelMatrix = transform.GetModelMatrix();
 	for (Mesh& mesh : meshes)
 	{
 		//mesh.SetupInstanceBuffer(transforms);
-		mesh.GetMaterial().shaderRef->SetMat4("model", modelMatrix);
 		mesh.DrawInstanced(static_cast<GLsizei>(transforms.size()));
 		
 
@@ -159,8 +154,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nod
 			indices.push_back(face.mIndices[j]);
 	}
 
-
-	// Materials
+	// Textures
 	std::vector<Texture> textures;
 	if (mesh->mMaterialIndex >= 0)
 	{
@@ -172,16 +166,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& nod
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
-	//Shader defaultShader("Default_Shaders/Default.shader");
-	Shader& defaultShader = ShaderManager::Exists("default")
-		? ShaderManager::Get("default") : 
-		ShaderManager::Get("light");
-
-
-	Material material(&defaultShader, textures, 128.0f);
-
-
-	return Mesh(vertices, indices, material, GL_STATIC_DRAW);
+	return Mesh(vertices, indices, textures, GL_STATIC_DRAW);
 }
 
 

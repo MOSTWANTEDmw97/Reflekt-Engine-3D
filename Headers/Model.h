@@ -21,12 +21,11 @@ class Model
 {
 	public:
 		std::vector<Mesh> meshes;
-		Transform transform;
 		std::string directory;
 
 		Model() = default;
-		Model(const std::vector<Mesh>& meshList, const Transform& initialTransform = Transform());
-		Model(const std::string& path, const Transform& initialTransform = Transform());
+		Model(const std::vector<Mesh>& meshList);
+		Model(const std::string& path);
 
 		void Draw();
 		void DrawInstanced(const std::vector<glm::mat4>& transforms);
@@ -34,11 +33,6 @@ class Model
 
 		std::vector<Mesh>& GetMeshes() { return meshes; }
 
-		//std::string GetName() const { return "Model"; }
-		void DrawInspector()
-		{
-			DrawTransformInspector(transform);
-		}
 
 		private:
 		void LoadModel(const std::string& path);
