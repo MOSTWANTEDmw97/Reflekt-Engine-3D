@@ -71,6 +71,7 @@ void RenderPipeline::DrawTransparent(Shader* overrideShader)
     for (auto entry : transparentQueue)
     {
         entry.meshRenderer->Draw(overrideShader);
+        std::cout << "Transparent draw" << std::endl;
     }
 
     // Restore state

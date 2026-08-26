@@ -11,7 +11,7 @@ void Scene::SetCamera(Camera* cam)
     pipeline.SetCamera(cam);
 }
 
-void Scene::DrawGeometry(float width, float height, Shader* overrideShader)
+void Scene::CollectGeometry(float width, float height, Shader* overrideShader)
 {
     pipeline.opaqueQueue.clear();
     pipeline.transparentQueue.clear();
@@ -24,15 +24,24 @@ void Scene::DrawGeometry(float width, float height, Shader* overrideShader)
             pipeline.AddMeshRenderer(*renderer);
         }
     }
+}
 
-    //std::cout << "Count: " << pipeline.ReturnOpaqueQueueCount() << std::endl;
+void Scene::DrawAllGeometry(float width, float height, Shader* overrideShader)
+{
+    CollectGeometry(width, height, overrideShader);
+    pipeline.DrawAll(overrideShader);
+}
+
+void Scene::DrawOpaqueGeometry(float width, float height, Shader* overrideShader)
+{
+    CollectGeometry(width, height, overrideShader);
     pipeline.DrawOpaque(overrideShader);
-    if (activeCamera->skybox)
-    {
+}
 
-        //activeCamera->BindToShader(*activeCamera->skybox->shader, glm::mat4(1.0f), 1920.0f / 1080.0f);
-        //activeCamera->skybox->Draw();
-    }
+void Scene::DrawTranspaentGeometry(float width, float height, Shader* overrideShader)
+{
+
+    CollectGeometry(width, height, overrideShader);
     pipeline.DrawTransparent(overrideShader);
 }
 

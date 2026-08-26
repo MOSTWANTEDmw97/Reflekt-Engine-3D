@@ -8,23 +8,13 @@
 #include<assimp/version.h>
 #include<imgui.h>
 
-#include"Camera.h"
-#include"Model.h"
-#include"Graphics/ShaderManager.h"
-#include"Lighting/Light.h"
-
 #include"UI/IMGUI/IMGUI_DebugUI.h"
-#include"Rendering/ScreenQuad.h"
-//#include"Rendering/RenderPipeline.h"
-#include"Graphics/Cubemap.h"
-#include"Rendering/Skybox.h"
-#include"Rendering/Deferred_Rendering/DeferredRenderer.h"
-#include"Rendering/Scene/Scene.h"
 
-//#include"GLBuffers/FBO.h"
-#include"Rendering/RenderSceneFramebuffer.h"
-#include"Rendering/ShadowFramebuffer.h"
+#include"Graphics/ShaderManager.h"
+#include"Rendering/Renderer.h"
 
+
+//Pre-Processor for debug ui string
 #define DebugUI_Register_Object(obj) debugUI.RegisterObject(&obj, #obj)
 //OpenGL 4.6.0
 //GLFW 3.3
@@ -75,8 +65,6 @@ int main()
 
 	// Resize frame buffer
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	RenderSceneFramebuffer sceneFrameBuffer(screenWidth, screenHeight);
-	ShadowFramebuffer shadowFrameBuffer(depthMapSize, depthMapSize);
 
 	IMGUI_DebugUI debugUI;
 	debugUI.Init(window);
@@ -185,7 +173,7 @@ int main()
 
 	//Shader
 	//Shader shader("Assets/Shaders/Default.vert.glsl", "Assets/Shaders/Default.frag.glsl");
-	Shader shader("Default_Shaders/default_lit.shader");
+	Shader shader("Default_Shaders/geometryPass.shader");
 	Shader depthMapShader("Default_Shaders/DepthMap.shader");
 	Shader PostProcess("Default_Shaders/PostPass.shader");
 
@@ -221,7 +209,7 @@ int main()
 	Material bagMat(&shader, { bag_Diffuse, bag_Specular }, 8.0f);
 	Material grassMat(&shader, { c_Grass }, 8.0f);
 	Material grassM(&shader, { grass }, 8.0f);
-	Material windowMat(&shader, { windowTex }, 16.0f, SurfaceType::Transparent);
+	Material windowMat(&shader, { windowTex }, 16.0f, SurfaceType::Opaque);
 	windowMat.cullMode = CullMode::None;
 	grassM.cullMode = CullMode::None;
 	//iron.shaderRef = &lightShader;
@@ -320,7 +308,7 @@ int main()
 	light.position = glm::vec3(0.0f, 2.0f, -2.0f);
 	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	DeferredRenderer deferredRenderer(screenWidth, screenHeight);
+
 
 	GameObject building;
 	building.AddComponent<MeshRenderer>(buildingModel);
@@ -342,12 +330,19 @@ int main()
 
 	camera.skybox = &skybox;
 
+	GameObject windowObj;
+	windowObj.AddComponent<MeshRenderer>(windowModel);
+	windowObj.GetComponent<MeshRenderer>()->SetMaterial(windowMat);
+	//windowObj.GetComponent<MeshRenderer>()->material->shaderRef = &randShad;
+	windowObj.transform.position = glm::vec3(0.0f, 0.0f, -2.0f);
+
 	Scene scene;
 	scene.SetCamera(&camera);
 	scene.AddGameObject(ironCube);
 	scene.AddGameObject(brickCube);
-	scene.AddGameObject(building);
+	scene.AddGameObject(windowObj);
 	scene.AddGameObject(lightobj);
+	scene.AddGameObject(building);
 
 	building.transform.position = glm::vec3(0.0f, 0.0f, 10.0f);
 	building.transform.scale = glm::vec3(0.005f);
@@ -366,7 +361,9 @@ int main()
 	glm::mat4 flipX = glm::scale(glm::mat4(1.0f), glm::vec3(-1, 1, 1));
 	glm::mat4 lightSpaceMatrix = lightProjection * lightView * flipX;
 
+	Renderer renderer(screenWidth, screenHeight);
 
+	glEnable(GL_DEPTH_TEST);
 
 	// Update
 	while (!glfwWindowShouldClose(window))
@@ -392,18 +389,8 @@ int main()
 
 		ProcessInput(window, camera, deltaTime);
 
+		renderer.Render(scene);
 
-		//glEnable(GL_DEPTH_TEST);
-		//glDepthFunc(GL_LESS);
-		//glDepthMask(GL_TRUE);
-		//glCullFace(GL_BACK);
-		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		// 1. Depth pass (shadow map)
-		
-
-		camera.BindToShader(*skybox.shader, glm::mat4(1.0f), 1366.0f / 768.0f);
-		skybox.Draw();
-		//deferredRenderer.RenderScene(scene);
 
 		debugUI.EndFrame();
 		glfwSwapBuffers(window);

@@ -15,12 +15,12 @@ public:
     GLuint gAlbedo;
     GLuint gSpecular;
     GLuint rboDepth;
+    GLuint gDepthStencilTexture;
 
     GBuffer(int width, int height);
     ~GBuffer();
 
     void BindForGeometryPass();
-    void BindForLightingPass();
 };
 
 #endif // !GBUFFER_H

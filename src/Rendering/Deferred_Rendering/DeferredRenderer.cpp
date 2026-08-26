@@ -2,55 +2,39 @@
 #include<glad/glad.h>
 #include<Camera.h>
 
+//Deferred Renderer only is supposed to render Opaque objects 
+
 DeferredRenderer::DeferredRenderer(int width, int height)
     : gBuffer(width, height),
+    litBuffer(width, height),
     geometryPassShader("Default_Shaders/geometryPass.shader"),
     lightingPassShader("Default_Shaders/lightingPass.shader"),
     screenWidth(width),
-    screenHeight(height),
-    quad() {}
+    screenHeight(height) {}
 
 void DeferredRenderer::RenderScene(Scene& scene)
 {
-
-    BackgroundPass(scene);
-
     GeometryPass(scene);
     LightingPass(scene);
-
 }
 
-void DeferredRenderer::BackgroundPass(Scene& scene)
-{
-        if (scene.activeCamera && scene.activeCamera->skybox)
-        {
-            glDepthMask(GL_FALSE);          // don’t write depth
-            glDepthFunc(GL_LEQUAL);         // pass if depth <= current
-            scene.activeCamera->BindToShader(*scene.activeCamera->skybox->shader, glm::mat4(1.0f), (float)screenWidth / float(screenHeight));
-            scene.activeCamera->skybox->Draw();
-            glDepthMask(GL_TRUE);           // restore depth writes
-            glDepthFunc(GL_LESS);           // restore default
-        }
-    
-}
 
 void DeferredRenderer::GeometryPass(Scene& scene)
 {
     gBuffer.BindForGeometryPass();
     glClearColor(0.0, 0.0, 0.0, 1.0);
-    //geometryPassShader.Use();
-    scene.DrawGeometry((float)screenWidth, (float)screenHeight);
+    scene.DrawOpaqueGeometry((float)screenWidth, (float)screenHeight);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void DeferredRenderer::LightingPass(Scene& scene)
 {
-    gBuffer.BindForLightingPass();
-
+    //gBuffer.BindForLightingPass();
+    litBuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     lightingPassShader.Use();
 
-    // Bind G‑Buffer textures
+    //Bind G‑Buffer tex
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, gBuffer.gPosition);
     lightingPassShader.SetInt("gPosition", 0);
@@ -67,14 +51,11 @@ void DeferredRenderer::LightingPass(Scene& scene)
     glBindTexture(GL_TEXTURE_2D, gBuffer.gSpecular);
     lightingPassShader.SetInt("gSpecular", 3);
 
-    // Upload lights
     scene.UploadLights(lightingPassShader);
 
-    
-    glDisable(GL_DEPTH_TEST);
-
-    // Render full‑screen quad
-    quad.Draw();
+    //glDisable(GL_DEPTH_TEST);
+    litBuffer.Unbind();
+    //glEnable(GL_DEPTH_TEST);
 }
 
 void DeferredRenderer::ChangeScreenResolution(int width, int height)

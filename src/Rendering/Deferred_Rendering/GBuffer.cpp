@@ -5,6 +5,7 @@ GBuffer::GBuffer(int width, int height)
     glGenFramebuffers(1, &ID);
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
 
+
     // Position
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -45,7 +46,22 @@ GBuffer::GBuffer(int width, int height)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3,
         GL_TEXTURE_2D, gSpecular, 0);
 
-    // Tell OpenGL which color attachments to draw into
+
+    glGenTextures(1, &gDepthStencilTexture);
+    glBindTexture(GL_TEXTURE_2D, gDepthStencilTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
+        GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+        GL_TEXTURE_2D, gDepthStencilTexture, 0);
+
+
+
+    //Attachment for maps
     GLuint attachments[4] = {
         GL_COLOR_ATTACHMENT0,
         GL_COLOR_ATTACHMENT1,
@@ -54,12 +70,6 @@ GBuffer::GBuffer(int width, int height)
     };
     glDrawBuffers(4, attachments);
 
-    // Depth buffer
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-        GL_RENDERBUFFER, rboDepth);
 
     if (!IsComplete())
         std::cerr << "ERROR::GBUFFER:: Framebuffer is not complete!" << std::endl;
@@ -82,11 +92,5 @@ GBuffer::~GBuffer()
 void GBuffer::BindForGeometryPass()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, ID);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void GBuffer::BindForLightingPass()
-{
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // back to default framebuffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

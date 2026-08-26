@@ -9,8 +9,6 @@ class FBO
 {
 	public:
 		GLuint ID;
-		//GLuint colorTex;
-		//GLuint depthStencilTex;
 
 		FBO();
 		~FBO();

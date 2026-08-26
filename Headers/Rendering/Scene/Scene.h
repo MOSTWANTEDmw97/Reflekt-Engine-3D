@@ -21,7 +21,10 @@ public:
 
     void AddGameObject(GameObject& obj);
     void SetCamera(Camera* cam);
-    void DrawGeometry(float width, float height, Shader* overrideShader = nullptr);
+    void CollectGeometry(float width, float height, Shader* overrideShader = nullptr);
+    void DrawAllGeometry(float width, float height, Shader* overrideShader = nullptr);
+    void DrawOpaqueGeometry(float width, float height, Shader* overrideShader = nullptr);
+    void DrawTranspaentGeometry(float width, float height, Shader* overrideShader = nullptr);
     void UploadLights(Shader& lightingShader);
 };
 

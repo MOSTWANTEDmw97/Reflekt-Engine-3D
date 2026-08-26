@@ -178,8 +178,10 @@
     <ClCompile Include="src\Lighting\Light.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\LightManager.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\Rendering\Deferred_Rendering\DeferredLitBuffer.cpp" />
     <ClCompile Include="src\Rendering\Deferred_Rendering\DeferredRenderer.cpp" />
     <ClCompile Include="src\Rendering\Deferred_Rendering\GBuffer.cpp" />
+    <ClCompile Include="src\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Rendering\RenderPipeline.cpp" />
     <ClCompile Include="src\Rendering\RenderSceneFramebuffer.cpp" />
     <ClCompile Include="src\Rendering\Scene\Scene.cpp" />
@@ -210,8 +212,10 @@
     <ClInclude Include="Headers\Lighting\Light.h" />
     <ClInclude Include="Headers\Lighting\Light_Managers\LightManager.h" />
     <ClInclude Include="Headers\MeshRenderer.h" />
+    <ClInclude Include="Headers\Rendering\Deferred_Rendering\DeferredLitBuffer.h" />
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\DeferredRenderer.h" />
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\GBuffer.h" />
+    <ClInclude Include="Headers\Rendering\Renderer.h" />
     <ClInclude Include="Headers\Rendering\RenderPipeline.h" />
     <ClInclude Include="Headers\Rendering\RenderSceneFramebuffer.h" />
     <ClInclude Include="Headers\Rendering\Scene\Scene.h" />
