@@ -10,9 +10,10 @@ DeferredRenderer::DeferredRenderer(int width, int height)
     geometryPassShader("Default_Shaders/geometryPass.shader"),
     lightingPassShader("Default_Shaders/lightingPass.shader"),
     screenWidth(width),
-    screenHeight(height) {}
+    screenHeight(height), 
+    quad() {}
 
-void DeferredRenderer::RenderScene(Scene& scene)
+void DeferredRenderer::RenderOpaque(Scene& scene)
 {
     GeometryPass(scene);
     LightingPass(scene);
@@ -22,7 +23,11 @@ void DeferredRenderer::RenderScene(Scene& scene)
 void DeferredRenderer::GeometryPass(Scene& scene)
 {
     gBuffer.BindForGeometryPass();
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glClear(GL_DEPTH_BUFFER_BIT);
     scene.DrawOpaqueGeometry((float)screenWidth, (float)screenHeight);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -32,6 +37,7 @@ void DeferredRenderer::LightingPass(Scene& scene)
     //gBuffer.BindForLightingPass();
     litBuffer.Bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     lightingPassShader.Use();
 
     //Bind G‑Buffer tex
@@ -53,9 +59,11 @@ void DeferredRenderer::LightingPass(Scene& scene)
 
     scene.UploadLights(lightingPassShader);
 
-    //glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+
+    quad.Draw();
     litBuffer.Unbind();
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void DeferredRenderer::ChangeScreenResolution(int width, int height)

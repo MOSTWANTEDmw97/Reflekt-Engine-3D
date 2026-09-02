@@ -14,21 +14,35 @@
 		isInstanced(instanced),
 		transforms(transforms)
 	{
-
 		std::vector<Texture> allTextures;
 		for (Mesh& mesh : model->GetMeshes())
 		{
 			const auto& texs = mesh.GetTextures();
 			allTextures.insert(allTextures.end(), texs.begin(), texs.end());
 		}
-		//Shader defaultShader("Default_Shaders/default_lit.shader");
+
 		Shader* defaultShader = new Shader("Default_Shaders/geometryPass.shader");
-		//Material mat(&defaultShader, allTextures, 32.0f);
-		material = new Material(defaultShader, allTextures, 32.0f) ;
-		//material = Material(&defaultShader, allTextures, 32.0f);
-		// Build material with embedded textures
-		//std::cout << "model" << std::endl;
+		material = new Material(defaultShader);
+		material->SetFloat("material.shininess", 32.0f);
+
+		material = new Material(defaultShader);
+		material->SetFloat("material.shininess", 32.0f);
+
+
+		//PlaceHolder for now 
+		int slot = 0;
+		for (Mesh& mesh : model->GetMeshes())
+		{
+			for (Texture& tex : mesh.GetTextures())
+			{
+				material->SetTexture("material.diffuse", &tex, slot);
+				slot++;
+			}
+		}
+
 	}
+		
+	
 
 	void MeshRenderer::Draw(Shader* overrideShader)
 	{
@@ -38,18 +52,25 @@
 		Shader* activeShader = overrideShader ? overrideShader : material->shaderRef;
 
 		material->Apply(activeShader);
-		//activeShader->UsePass(renderPassName);
+
+		//Applying here cuz if i dont transparent breaks
+		//And idfk why and IM TOO TIRED TO FIX TS
 		activeShader->SetMat4("model", gameObject->transform.GetModelMatrix());
+		
 		if (isInstanced)
 		{
 			model->DrawInstanced(transforms);
 		}
 		else
-		{
+		{//
 			model->Draw();
 		}
 
-		//std::cout << "Drawing object at: "
-			//<< (gameObject->transform.position.x) << gameObject->transform.position.y<<gameObject->transform.position.z<< std::endl;
+		// Reset state if transparent
+		if (material->surfaceType == SurfaceType::Transparent)
+		{
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+		}
 
 	}

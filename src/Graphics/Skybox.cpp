@@ -1,4 +1,4 @@
-#include"Rendering/Skybox.h"
+#include"Graphics/Skybox.h"
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -65,12 +65,24 @@ Skybox::~Skybox()
     vbo.Delete();
 }
 
+void Skybox::SetCubemap(Cubemap* _cubemap)
+{
+    cubemap = _cubemap;
+}
+void Skybox::SetShader(Shader* _shader)
+{
+    shader = _shader;
+}
+
 void Skybox::Draw()
 {
-    glDepthMask(GL_FALSE);
+    //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    glDepthMask(GL_TRUE);
     glDisable(GL_CULL_FACE);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     shader->Use();
     cubemap->Bind(0);
 
@@ -78,8 +90,9 @@ void Skybox::Draw()
     glDrawArrays(GL_TRIANGLES, 0, 36);
     vao.Unbind();
 
-   glDepthFunc(GL_LESS);
-   glDisable(GL_CULL_FACE);
-   glEnable(GL_DEPTH_TEST);
-   glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_CULL_FACE);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
 }
+

@@ -7,9 +7,6 @@
 #include"Model.h"
 #include"Graphics/ShaderManager.h"
 
-//TODO:
-//Support for multiple meshes and materials in one models 
-
 Model::Model(const std::vector<Mesh>& meshList)
 	: meshes(meshList) {}
 
@@ -247,7 +244,7 @@ Texture Model::LoadEmbeddedTexture(const aiTexture* aiTex, const std::string& ty
 	return Texture(aiTex, typeName);
 }
 
-glm::mat4 Model::ConvertToGLM(const aiMatrix4x4& m)
+glm::mat4 Model::ConvertToGLM(const aiMatrix4x4& m)	
 {
 	return glm::mat4(
 		m.a1, m.b1, m.c1, m.d1,

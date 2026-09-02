@@ -1,24 +1,26 @@
-#include"Rendering/Deferred_Rendering/DeferredLitBuffer.h"
+#include"Rendering/Forward_Rendering/Background/SkyboxBuffer.h"
+#include<iostream>
 
-DeferredLitBuffer::DeferredLitBuffer(int width, int height)
-    :fbo()
+SkyboxBuffer::SkyboxBuffer(int width, int height)
+    : screenWidth(width), screenHeight(height), fbo()
 {
-    fbo.Bind();//
+    fbo.Bind();
 
-    // Color
+    // Color attachment (RGB is enough for skybox)
     glGenTextures(1, &colorTex);
     glBindTexture(GL_TEXTURE_2D, colorTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0,
-        GL_RGB, GL_FLOAT, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+        GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
         GL_TEXTURE_2D, colorTex, 0);
 
-    //Depth
+    // Depth attachment (needed so skybox respects depth testing)
     glGenTextures(1, &depthTex);
     glBindTexture(GL_TEXTURE_2D, depthTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24,
+        width, height, 0,
         GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -27,32 +29,34 @@ DeferredLitBuffer::DeferredLitBuffer(int width, int height)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
         GL_TEXTURE_2D, depthTex, 0);
 
+    GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+    glDrawBuffers(1, drawBuffers);
+
     if (!IsComplete())
-        std::cerr << "ERROR::DeferredLitBuffer:: Framebuffer is not complete!" << std::endl;
+        std::cerr << "ERROR::SkyboxBuffer:: Framebuffer not complete!" << std::endl;
     else
-        std::cout << "DeferredLitBuffer: Framebuffer complete" << std::endl;
+        std::cout << "SkyboxBuffer: Framebuffer complete" << std::endl;
 
     fbo.Unbind();
 }
 
-DeferredLitBuffer::~DeferredLitBuffer()
+SkyboxBuffer::~SkyboxBuffer()
 {
     glDeleteTextures(1, &colorTex);
     glDeleteTextures(1, &depthTex);
 }
 
-void DeferredLitBuffer::Bind()
+void SkyboxBuffer::Bind()
 {
     fbo.Bind();
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void DeferredLitBuffer::Unbind()
+void SkyboxBuffer::Unbind()
 {
     fbo.Unbind();
 }
 
-bool DeferredLitBuffer::IsComplete()
+bool SkyboxBuffer::IsComplete()
 {
     return fbo.IsComplete();
 }

@@ -2,6 +2,7 @@
 #ifndef MESHRENDERER_H
 #define MESHRENDERER_H
 
+#include<memory>
 #include"Component.h"
 #include"Model.h"
 #include"Graphics/Material.h"
@@ -20,6 +21,8 @@ class MeshRenderer : public Component
 		MeshRenderer(Model& m, Material& mat, bool isInstanced = false, const std::vector<glm::mat4>& transforms = {});
 		void SetMaterial(Material& mat) { material = &mat; };
 		Material GetMaterial() { return *material; };
+
+
 		void Draw(Shader* shader = nullptr);
 };
 

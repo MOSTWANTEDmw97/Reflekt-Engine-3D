@@ -12,6 +12,7 @@
 
 #include"Graphics/ShaderManager.h"
 #include"Rendering/Renderer.h"
+#include "Rendering/RenderPipeline.h"
 
 
 //Pre-Processor for debug ui string
@@ -19,8 +20,8 @@
 //OpenGL 4.6.0
 //GLFW 3.3
 
-int screenWidth = 1366;
-int screenHeight = 768;
+int screenWidth = 1920;
+int screenHeight = 1080;
 
 float depthMapSize = 4096;
 
@@ -176,6 +177,7 @@ int main()
 	Shader shader("Default_Shaders/geometryPass.shader");
 	Shader depthMapShader("Default_Shaders/DepthMap.shader");
 	Shader PostProcess("Default_Shaders/PostPass.shader");
+	Shader transparentLit("Default_Shaders/transparent_lit.shader");
 
 	//Model and mesh and mats
 	Texture leaf("Assets/Textures/Leaf.jpeg", "diffuse");
@@ -203,13 +205,54 @@ int main()
 	Shader skyboxShader("Default_Shaders/Skybox.shader");
 	Skybox skybox(&skyboxCubemap, &skyboxShader);
 
+	/*
 	Material iron(&shader, { container_Diffuse, container_Spec }, 32.0f);
 	Material leafMaterial(&shader, { leaf }, 32.0f);
 	Material boardMaterial(&shader, { board_Diffuse }, 32.0f);
 	Material bagMat(&shader, { bag_Diffuse, bag_Specular }, 8.0f);
 	Material grassMat(&shader, { c_Grass }, 8.0f);
 	Material grassM(&shader, { grass }, 8.0f);
-	Material windowMat(&shader, { windowTex }, 16.0f, SurfaceType::Opaque);
+	Material windowMat(&transparentLit, { windowTex }, 16.0f, SurfaceType::Transparent);
+	*/
+	// Iron material
+	Material iron(&shader);
+	iron.SetTexture("material.diffuse", &container_Diffuse, 0);
+	iron.SetTexture("material.specular", &container_Spec, 1);
+	iron.SetFloat("material.shininess", 32.0f);
+
+	// Leaf material
+	Material leafMaterial(&shader);
+	leafMaterial.SetTexture("material.diffuse", &leaf, 0);
+	leafMaterial.SetFloat("material.shininess", 32.0f);
+
+	// Board material
+	Material boardMaterial(&shader);
+	boardMaterial.SetTexture("material.diffuse", &board_Diffuse, 0);
+	boardMaterial.SetFloat("material.shininess", 32.0f);
+
+	// Bag material
+	Material bagMat(&shader);
+	bagMat.SetTexture("material.diffuse", &bag_Diffuse, 0);
+	bagMat.SetTexture("material.specular", &bag_Specular, 1);
+	bagMat.SetFloat("material.shininess", 8.0f);
+
+	// Grass material (two variants)
+	Material grassMat(&shader);
+	grassMat.SetTexture("material.diffuse", &c_Grass, 0);
+	grassMat.SetFloat("material.shininess", 8.0f);
+
+	Material grassM(&shader);
+	grassM.SetTexture("material.diffuse", &grass, 0);
+	grassM.SetFloat("material.shininess", 8.0f);
+
+	// Transparent window material
+	Material windowMat(&transparentLit);
+	windowMat.SetTexture("material.diffuse", &windowTex, 0);
+	windowMat.SetFloat("material.shininess", 16.0f);
+	// You can also set transparency flags via a property or uniform
+	windowMat.surfaceType = SurfaceType::Transparent;
+
+
 	windowMat.cullMode = CullMode::None;
 	grassM.cullMode = CullMode::None;
 	//iron.shaderRef = &lightShader;
@@ -264,7 +307,7 @@ int main()
 	float clipNear = 0.01f;
 	float clipFar = 1000.0f;
 
-	Camera camera(cameraTransform, fov, clipNear, clipFar);
+	Camera camera(cameraTransform, fov, clipNear, clipFar, &skybox);
 
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 lightPos = glm::vec3(1.0f, 0.0f, 0.5f);
@@ -313,17 +356,38 @@ int main()
 	GameObject building;
 	building.AddComponent<MeshRenderer>(buildingModel);
 	building.transform.scale = glm::vec3(0.005f);
+	building.transform.position = glm::vec3(0.0f, 0.0f, 5.0f);
 
 	Shader randShad("Default_Shaders/default_Lit.shader");
 	GameObject ironCube;
 	ironCube.AddComponent<MeshRenderer>(cubeModel);
 	ironCube.GetComponent<MeshRenderer>()->SetMaterial(iron);
-	ironCube.GetComponent<MeshRenderer>()->material->shaderRef = &randShad;
+	//ironCube.GetComponent<MeshRenderer>()->material->shaderRef = &randShad;
 	ironCube.transform.position = glm::vec3(3.0f, 0.0f, 0.0f);
+
+	GameObject ground;
+	ground.AddComponent<MeshRenderer>(grassPlaneModel);
+	ground.transform.position = glm::vec3(0.0f, -2.0f, 0.0f);
+	ground.transform.scale = glm::vec3(0.01f);
 
 	GameObject brickCube;
 	brickCube.AddComponent<MeshRenderer>(brickCubeModel);
 	brickCube.transform.scale = glm::vec3(0.005f);
+
+	GameObject brickCube1;
+	brickCube1.AddComponent<MeshRenderer>(brickCubeModel);
+	brickCube1.GetComponent<MeshRenderer>()->material = new Material(windowMat);
+	brickCube1.transform.scale = glm::vec3(0.005f);
+	brickCube1.transform.position = glm::vec3(3.0f);
+	brickCube1.GetComponent<MeshRenderer>()->material->surfaceType = SurfaceType::Transparent;
+
+	GameObject brickCube2;
+	brickCube2.AddComponent<MeshRenderer>(brickCubeModel);
+	brickCube2.transform.scale = glm::vec3(0.005f);
+	brickCube2.GetComponent<MeshRenderer>()->material = new Material(windowMat);
+	brickCube2.transform.position = glm::vec3(5.0f);
+	brickCube2.GetComponent<MeshRenderer>()->material->surfaceType = SurfaceType::Transparent;
+
 
 	GameObject lightobj;
 	lightobj.AddComponent<LightComponent>(light);
@@ -334,8 +398,12 @@ int main()
 	windowObj.AddComponent<MeshRenderer>(windowModel);
 	windowObj.GetComponent<MeshRenderer>()->SetMaterial(windowMat);
 	//windowObj.GetComponent<MeshRenderer>()->material->shaderRef = &randShad;
-	windowObj.transform.position = glm::vec3(0.0f, 0.0f, -2.0f);
+	windowObj.transform.position = glm::vec3(0.0f, 2.0f, -2.0f);
 
+	GameObject windowObj1;
+	windowObj1.AddComponent<MeshRenderer>(windowModel);
+	windowObj1.GetComponent<MeshRenderer>()->SetMaterial(windowMat);
+	windowObj1.transform.position = glm::vec3(4.0f);
 	Scene scene;
 	scene.SetCamera(&camera);
 	scene.AddGameObject(ironCube);
@@ -343,9 +411,10 @@ int main()
 	scene.AddGameObject(windowObj);
 	scene.AddGameObject(lightobj);
 	scene.AddGameObject(building);
-
-	building.transform.position = glm::vec3(0.0f, 0.0f, 10.0f);
-	building.transform.scale = glm::vec3(0.005f);
+	scene.AddGameObject(ground);
+	scene.AddGameObject(windowObj1);
+	scene.AddGameObject(brickCube1);
+	scene.AddGameObject(brickCube2);
 	
 
 	std::vector<float> frameTimes;
@@ -382,14 +451,20 @@ int main()
 			fpsUpdateTimer = 0.0f;
 		}
 
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+
+		
+		ProcessInput(window, camera, deltaTime);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		renderer.Render(scene);
+		//scene.activeCamera->BindToShader(*scene.activeCamera->skybox->shader, glm::mat4(1.0f), (float)screenWidth / (float)screenHeight);
+		//scene.activeCamera->skybox->Draw();
+		//scene.DrawAllGeometry((float)screenWidth, (float)screenHeight, &transparentLit);
+
 		debugUI.BeginFrame();
-		debugUI.RenderUI();
 		debugUI.RenderPerfMetrics(frameTimes);
 		debugUI.RenderCameraPosition(camera.transform.position);
-
-		ProcessInput(window, camera, deltaTime);
-
-		renderer.Render(scene);
+		debugUI.RenderUI();
 
 
 		debugUI.EndFrame();

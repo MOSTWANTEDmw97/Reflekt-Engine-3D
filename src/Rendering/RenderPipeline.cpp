@@ -11,7 +11,7 @@ void RenderPipeline::AddMeshRenderer(MeshRenderer& meshRenderer, const bool isIn
     {
         if (!isInstanced)
         {
-            RenderEntry entry(&meshRenderer, {}, false);
+            RenderEntry entry(meshRenderer, {}, false);
 
             if (meshRenderer.GetMaterial().surfaceType == SurfaceType::Transparent)
             {
@@ -25,7 +25,7 @@ void RenderPipeline::AddMeshRenderer(MeshRenderer& meshRenderer, const bool isIn
 
         else if (isInstanced)
         {
-            RenderEntry entry(&meshRenderer, transforms, true);
+            RenderEntry entry(meshRenderer, transforms, true);
             for (Mesh& mesh : meshRenderer.model->GetMeshes())
             {
                 mesh.SetupInstanceBuffer(transforms);
@@ -45,12 +45,9 @@ void RenderPipeline::AddMeshRenderer(MeshRenderer& meshRenderer, const bool isIn
 
 void RenderPipeline::DrawOpaque(Shader* overrideShader)
 {
-    //glDisable(GL_BLEND);
-    //glDepthMask(GL_TRUE);
-
     for (auto& entry : opaqueQueue)
     {
-        entry.meshRenderer->Draw(overrideShader);
+        entry.meshRenderer.Draw(overrideShader);
     }
 
 }
@@ -60,23 +57,16 @@ void RenderPipeline::DrawTransparent(Shader* overrideShader)
     std::sort(transparentQueue.begin(), transparentQueue.end(),
         [&](RenderEntry a, RenderEntry b)
         {
-            float distA = glm::length(activeCamera->transform.position - a.meshRenderer->gameObject->transform.position);
-            float distB = glm::length(activeCamera->transform.position - b.meshRenderer->gameObject->transform.position);
+            float distA = glm::length(activeCamera->transform.position - a.meshRenderer.gameObject->transform.position);
+            float distB = glm::length(activeCamera->transform.position - b.meshRenderer.gameObject->transform.position);
             return distA > distB; // farthest first
         });
 
-    //glEnable(GL_BLEND);
-    //glDepthMask(GL_FALSE);
-
     for (auto entry : transparentQueue)
     {
-        entry.meshRenderer->Draw(overrideShader);
-        std::cout << "Transparent draw" << std::endl;
+        entry.meshRenderer.Draw(overrideShader);
+        //std::cout << "Transparent draw" << std::endl;
     }
-
-    // Restore state
-    //glDepthMask(GL_TRUE);
-    //glDisable(GL_BLEND);
 }
 
 void RenderPipeline::DrawAll(Shader* overrideShader)

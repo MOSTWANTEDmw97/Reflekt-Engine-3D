@@ -87,7 +87,7 @@
     <ClCompile Include="src\Graphics\Cubemap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Skybox.cpp">
+    <ClCompile Include="src\Rendering\Forward_Rendering\Background\SkyboxRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Lighting\Light_Managers\LightManager.cpp">
@@ -97,9 +97,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\RenderSceneFramebuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Rendering\ShadowFramebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Deferred_Rendering\GBuffer.cpp">
@@ -118,6 +115,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Forward_Rendering\Transparent\TransparentRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Forward_Rendering\Transparent\TransparentBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Forward_Rendering\Background\SkyboxBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,7 +185,7 @@
     <ClInclude Include="Headers\Graphics\Cubemap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Headers\Rendering\Skybox.h">
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Background\SkyboxRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Lighting\Light_Managers\LightManager.h">
@@ -186,9 +195,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Rendering\RenderSceneFramebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Headers\Rendering\ShadowFramebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\GBuffer.h">
@@ -224,6 +230,18 @@
     <ClInclude Include="Headers\Rendering\Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Transparent\TransparentRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Transparent\TransparentBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Background\SkyboxBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Graphics\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\Default.frag.glsl">
@@ -233,9 +251,6 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="Assets\Shaders\LightSource.frag.glsl" />
-    <None Include="Default_Shaders\Legacy\Default.frag.glsl" />
-    <None Include="Default_Shaders\Legacy\Default.vert.glsl" />
-    <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
     <None Include="Default_Shaders\default.shader" />
     <None Include="Default_Shaders\PostPass.shader" />
     <None Include="Default_Shaders\Skybox.shader" />
@@ -244,5 +259,7 @@
     <None Include="Default_Shaders\geometryPass.shader" />
     <None Include="Default_Shaders\lightingPass.shader" />
     <None Include="Default_Shaders\default_Lit.shader" />
+    <None Include="Default_Shaders\transparent_lit.shader" />
+    <None Include="Default_Shaders\composite.shader" />
   </ItemGroup>
 </Project>

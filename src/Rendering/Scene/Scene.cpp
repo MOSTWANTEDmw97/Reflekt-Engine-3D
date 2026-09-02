@@ -20,7 +20,7 @@ void Scene::CollectGeometry(float width, float height, Shader* overrideShader)
         if (auto renderer = obj.GetComponent<MeshRenderer>())
         {
             Shader* activeShader = overrideShader ? overrideShader : renderer->GetMaterial().shaderRef;
-            activeCamera->BindToShader(*activeShader, glm::mat4(1.0f), width / height);
+            activeCamera->BindToShader(*activeShader, obj.transform.GetModelMatrix(), width / height);
             pipeline.AddMeshRenderer(*renderer);
         }
     }
@@ -38,7 +38,7 @@ void Scene::DrawOpaqueGeometry(float width, float height, Shader* overrideShader
     pipeline.DrawOpaque(overrideShader);
 }
 
-void Scene::DrawTranspaentGeometry(float width, float height, Shader* overrideShader)
+void Scene::DrawTransparentGeometry(float width, float height, Shader* overrideShader)
 {
 
     CollectGeometry(width, height, overrideShader);

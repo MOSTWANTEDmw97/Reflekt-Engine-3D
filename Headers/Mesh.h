@@ -30,7 +30,7 @@ class Mesh
 
 		const std::vector<Vertex>& GetVertices() const { return vertices; }
 		const std::vector<unsigned int>& GetIndices() const { return indices; }
-		const std::vector<Texture>& GetTextures() const { return textures; }
+		std::vector<Texture>& GetTextures() { return textures; }
 
 	private:
 		void SetupMesh(GLenum drawType);

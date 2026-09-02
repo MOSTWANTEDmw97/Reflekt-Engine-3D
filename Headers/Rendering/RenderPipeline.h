@@ -9,7 +9,7 @@
 
 struct RenderEntry
 {
-	MeshRenderer* meshRenderer;
+	MeshRenderer meshRenderer;
 	std::vector<glm::mat4> instanceTransforms;
 	bool instanced = false;
 };

@@ -34,6 +34,7 @@ void main() {
     vec3 Normal  = normalize(texture(gNormal, TexCoords).rgb);
     vec3 Albedo  = texture(gAlbedo, TexCoords).rgb;
     vec3 SpecCol = texture(gSpecular, TexCoords).rgb;
+    float alpha = texture(gAlbedo, TexCoords).a;
 
     // Ambient
     vec3 ambient = 0.1 * Albedo;
@@ -49,8 +50,8 @@ void main() {
     float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
     vec3 specular = spec * light.color * SpecCol;
 
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
-    //FragColor = vec4(texture(gAlbedo, TexCoords).rgb, 1.0);
+    FragColor = vec4(ambient + diffuse + specular, alpha);
+    //FragColor = vec4(texture(gAlbedo, TexCoords));
 
     //FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

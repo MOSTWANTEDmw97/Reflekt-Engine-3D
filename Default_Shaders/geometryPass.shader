@@ -52,7 +52,13 @@ void main() {
     gNormal   = normalize(fs_in.Normal);
 
     gAlbedo = texture(material.diffuse, fs_in.TexCoords).rgb;
-    gSpecular = texture(material.specular, fs_in.TexCoords).rgb;
+    float depth = gl_FragCoord.z;
+
+// Convert to linear depth
+
+    // Visualize
+    //gAlbedo = vec3(linearDepth);
+    //gSpecular = texture(material.specular, fs_in.TexCoords).rgb;
 
     //gAlbedo = vec3(1.0, 0.0, 0.0);
     //gPosition = vec3(0.0);

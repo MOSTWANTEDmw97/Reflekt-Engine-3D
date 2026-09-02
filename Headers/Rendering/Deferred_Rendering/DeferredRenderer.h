@@ -17,6 +17,8 @@ public:
     Shader geometryPassShader;
     Shader lightingPassShader;
 
+    ScreenQuad quad;
+
     int screenWidth, screenHeight;
 
     DeferredRenderer(int width, int height);
@@ -24,7 +26,7 @@ public:
     void GeometryPass(Scene& scene);
     void LightingPass(Scene& scene);
 
-    void RenderScene(Scene& scene);
+    void RenderOpaque(Scene& scene);
     void ChangeScreenResolution(int width, int height);
 
 private:

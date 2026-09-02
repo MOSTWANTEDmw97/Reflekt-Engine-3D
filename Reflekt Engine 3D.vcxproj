@@ -175,12 +175,16 @@
     <ClCompile Include="src\GLBuffers\FBO.cpp" />
     <ClCompile Include="src\Graphics\Cubemap.cpp" />
     <ClCompile Include="src\Graphics\ShaderManager.cpp" />
+    <ClCompile Include="src\Graphics\Skybox.cpp" />
     <ClCompile Include="src\Lighting\Light.cpp" />
     <ClCompile Include="src\Lighting\Light_Managers\LightManager.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Rendering\Deferred_Rendering\DeferredLitBuffer.cpp" />
     <ClCompile Include="src\Rendering\Deferred_Rendering\DeferredRenderer.cpp" />
     <ClCompile Include="src\Rendering\Deferred_Rendering\GBuffer.cpp" />
+    <ClCompile Include="src\Rendering\Forward_Rendering\Background\SkyboxBuffer.cpp" />
+    <ClCompile Include="src\Rendering\Forward_Rendering\Transparent\TransparentRenderer.cpp" />
+    <ClCompile Include="src\Rendering\Forward_Rendering\Transparent\TransparentBuffer.cpp" />
     <ClCompile Include="src\Rendering\Renderer.cpp" />
     <ClCompile Include="src\Rendering\RenderPipeline.cpp" />
     <ClCompile Include="src\Rendering\RenderSceneFramebuffer.cpp" />
@@ -194,8 +198,7 @@
     <ClCompile Include="src\Graphics\Shader.cpp" />
     <ClCompile Include="src\GLBuffers\SSBO.cpp" />
     <ClCompile Include="src\Graphics\Texture.cpp" />
-    <ClCompile Include="src\Rendering\ShadowFramebuffer.cpp" />
-    <ClCompile Include="src\Rendering\Skybox.cpp" />
+    <ClCompile Include="src\Rendering\Forward_Rendering\Background\SkyboxRenderer.cpp" />
     <ClCompile Include="src\UI\IMGUI\IMGUI_DebugUI.cpp" />
     <ClCompile Include="src\GLBuffers\VAO.cpp" />
     <ClCompile Include="src\GLBuffers\VBO.cpp" />
@@ -208,6 +211,7 @@
     <ClInclude Include="Headers\GLBuffers\FBO.h" />
     <ClInclude Include="Headers\Graphics\Cubemap.h" />
     <ClInclude Include="Headers\Graphics\ShaderManager.h" />
+    <ClInclude Include="Headers\Graphics\Skybox.h" />
     <ClInclude Include="Headers\LightComponent.h" />
     <ClInclude Include="Headers\Lighting\Light.h" />
     <ClInclude Include="Headers\Lighting\Light_Managers\LightManager.h" />
@@ -215,6 +219,9 @@
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\DeferredLitBuffer.h" />
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\DeferredRenderer.h" />
     <ClInclude Include="Headers\Rendering\Deferred_Rendering\GBuffer.h" />
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Background\SkyboxBuffer.h" />
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Transparent\TransparentRenderer.h" />
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Transparent\TransparentBuffer.h" />
     <ClInclude Include="Headers\Rendering\Renderer.h" />
     <ClInclude Include="Headers\Rendering\RenderPipeline.h" />
     <ClInclude Include="Headers\Rendering\RenderSceneFramebuffer.h" />
@@ -228,8 +235,7 @@
     <ClInclude Include="Headers\GLBuffers\SSBO.h" />
     <ClInclude Include="Headers\Graphics\Texture.h" />
     <ClInclude Include="Headers\Math\Transform.h" />
-    <ClInclude Include="Headers\Rendering\ShadowFramebuffer.h" />
-    <ClInclude Include="Headers\Rendering\Skybox.h" />
+    <ClInclude Include="Headers\Rendering\Forward_Rendering\Background\SkyboxRenderer.h" />
     <ClInclude Include="Headers\SkyboxComponent.h" />
     <ClInclude Include="Headers\UI\IMGUI\IMGUI_DebugUI.h" />
     <ClInclude Include="Headers\GLBuffers\VAO.h" />
@@ -240,17 +246,16 @@
     <None Include="Assets\Shaders\Default.frag.glsl" />
     <None Include="Assets\Shaders\Default.vert.glsl" />
     <None Include="Assets\Shaders\LightSource.frag.glsl" />
+    <None Include="Default_Shaders\composite.shader" />
     <None Include="Default_Shaders\default.shader" />
     <None Include="Default_Shaders\default_Lit.shader" />
     <None Include="Default_Shaders\olddefault_lit.shader" />
     <None Include="Default_Shaders\DepthMap.shader" />
     <None Include="Default_Shaders\geometryPass.shader" />
-    <None Include="Default_Shaders\Legacy\Default.frag.glsl" />
-    <None Include="Default_Shaders\Legacy\Default.vert.glsl" />
-    <None Include="Default_Shaders\Legacy\LightSource.frag.glsl" />
     <None Include="Default_Shaders\lightingPass.shader" />
     <None Include="Default_Shaders\PostPass.shader" />
     <None Include="Default_Shaders\Skybox.shader" />
+    <None Include="Default_Shaders\transparent_lit.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

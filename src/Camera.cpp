@@ -33,7 +33,6 @@ void Camera::BindToShader(Shader& shader, const glm::mat4& model, float aspectRa
 	shader.SetMat4("model", model);
 	shader.SetMat4("view", view);
 	shader.SetMat4("projection", proj);
-
 }
 
 void Camera::SetPosition(const glm::vec3& pos)
