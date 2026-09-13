@@ -19,6 +19,7 @@ void Renderer::Render(Scene& scene)
     //Shader defaultS("Default_Shaders/olddefault_lit.shader");
     CompositePass();
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glDisable(GL_DEPTH_TEST);
     screenQuad.Draw();
     glEnable(GL_DEPTH_TEST);
@@ -43,6 +44,21 @@ void Renderer::BackgroundPass(Scene& scene)
 void Renderer::TransparentPass(Scene& scene)
 {
 
+    for (auto& obj : scene.gameObjects)
+    {
+        if (auto renderer = obj.GetComponent<MeshRenderer>())
+        {
+            if (renderer->material->surfaceType == SurfaceType::Transparent)
+            {
+                renderer->material->shaderRef->Use();
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, deferredRenderer.gBuffer.gDepthStencilTexture);
+                renderer->material->shaderRef->SetInt("opaqueDepthTex", 3);
+            }
+        }
+    }
+
+    //glBindTexture(GL_TEXTURE_2D, 0);
     transparentRenderer.RenderTransparent(scene);
 }
 
@@ -65,6 +81,14 @@ void Renderer::CompositePass()
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, transparentRenderer.transparentBuffer.colorTex);
     compositeShader.SetInt("transparentTex", 2);
+
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, deferredRenderer.litBuffer.depthTex);
+    compositeShader.SetInt("opaqueDepthTex", 3);
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, transparentRenderer.transparentBuffer.depthTex);
+    compositeShader.SetInt("transparentDepthTex", 4);
 
     //glDisable(GL_DEPTH_TEST);
     //screenQuad.Draw();

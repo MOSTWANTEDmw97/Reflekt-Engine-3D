@@ -12,6 +12,7 @@ void TransparentRenderer::RenderTransparent(Scene& scene)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+
     scene.UploadLights(forwardShader);
     scene.DrawTransparentGeometry(float(screenWidth), float(screenHeight));
     

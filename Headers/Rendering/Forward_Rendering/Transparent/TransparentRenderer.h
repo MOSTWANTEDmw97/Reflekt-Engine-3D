@@ -7,6 +7,7 @@
 #include"Rendering/Scene/Scene.h"
 #include"Rendering/ScreenQuad.h"
 #include"Rendering/Forward_Rendering/Transparent/TransparentBuffer.h"
+#include"Rendering/Deferred_Rendering/DeferredRenderer.h"
 
 class TransparentRenderer
 {

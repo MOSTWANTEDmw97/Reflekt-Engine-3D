@@ -47,7 +47,7 @@ void RenderPipeline::DrawOpaque(Shader* overrideShader)
 {
     for (auto& entry : opaqueQueue)
     {
-        entry.meshRenderer.Draw(overrideShader);
+        entry.meshRenderer.Draw(overrideShader); // Unbind texture after drawing
     }
 
 }
@@ -65,7 +65,6 @@ void RenderPipeline::DrawTransparent(Shader* overrideShader)
     for (auto entry : transparentQueue)
     {
         entry.meshRenderer.Draw(overrideShader);
-        //std::cout << "Transparent draw" << std::endl;
     }
 }
 

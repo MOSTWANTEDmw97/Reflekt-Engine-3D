@@ -46,7 +46,6 @@
 
 	void MeshRenderer::Draw(Shader* overrideShader)
 	{
-
 		if (!model || !material) return;
 
 		Shader* activeShader = overrideShader ? overrideShader : material->shaderRef;
@@ -73,4 +72,6 @@
 			glDisable(GL_BLEND);
 		}
 
+		//Unbind tex after draw call, so no texture bleeding into next draw calls
+		material->UnbindTextures();
 	}

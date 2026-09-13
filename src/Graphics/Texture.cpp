@@ -4,7 +4,6 @@
 #include<algorithm>
 #include"Graphics/Texture.h"
 
-
 // External texture 
 Texture::Texture(const char* imagePath, const std::string& typeName, GLenum format, GLenum texType, GLenum slot, GLenum pixelType, GLenum filterMode, GLenum wrapMode)
 	:ID(0), 

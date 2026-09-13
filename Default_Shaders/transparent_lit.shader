@@ -54,12 +54,30 @@ struct Light {
 };
 uniform Light light;
 
+uniform sampler2D opaqueDepthTex; //Slot 0
+
+
+float LinearizeDepth(float depth, float zNear, float zFar);
+
 void main()
 {
+    float zNear = 0.1;
+    float zFar = 1000.0;
+
     vec4 texColor = texture(material.diffuse, fs_in.TexCoords);
     vec3 albedo   = texColor.rgb;
     float alpha   = texColor.a; // transparency
 
+
+    vec2 screenUV = gl_FragCoord.xy / vec2(textureSize(opaqueDepthTex, 0));
+    float fragDepth = LinearizeDepth(gl_FragCoord.z, zNear, zFar);
+    float opaqueDepth = LinearizeDepth(texture(opaqueDepthTex, screenUV).r, zNear, zFar);
+    
+    if(fragDepth > opaqueDepth + 1e-5) // If the fragment is behind the opaque geometry, discard it
+    {
+        discard;
+    }
+    
     // Ambient
     vec3 ambient = 0.1 * albedo;
 
@@ -77,9 +95,12 @@ void main()
 
     vec3 lighting = ambient + diffuse + specular;
 
-    //FragColor = vec4(albedo.r, albedo.g, 0.0, 0.5);
     FragColor = vec4(lighting, alpha);
-    //FragColor = vec4(1.0, 0.0, 0.0, 0.1);
-    //FragColor = texture(material.diffuse, fs_in.TexCoords);
+    //FragColor = vec4(albedo, alpha);
 
+}
+
+float LinearizeDepth(float depth, float zNear, float zFar)
+{
+    return (2.0 * zNear) / (zFar + zNear - depth * (zFar - zNear));
 }

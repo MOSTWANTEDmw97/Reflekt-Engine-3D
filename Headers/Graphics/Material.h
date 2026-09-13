@@ -51,6 +51,7 @@
 			void SetCubeMapTexture(const std::string& name, Texture* tex, int slot = 0);
 
 			void Apply(Shader* overrideShader = nullptr);
+			void UnbindTextures();
 	
 		private:
 

@@ -9,7 +9,6 @@
 #include<imgui.h>
 
 #include"UI/IMGUI/IMGUI_DebugUI.h"
-
 #include"Graphics/ShaderManager.h"
 #include"Rendering/Renderer.h"
 #include "Rendering/RenderPipeline.h"
@@ -251,6 +250,7 @@ int main()
 	windowMat.SetFloat("material.shininess", 16.0f);
 	// You can also set transparency flags via a property or uniform
 	windowMat.surfaceType = SurfaceType::Transparent;
+	windowMat.blendMode = BlendMode::Alpha;
 
 
 	windowMat.cullMode = CullMode::None;
@@ -431,6 +431,8 @@ int main()
 	glm::mat4 lightSpaceMatrix = lightProjection * lightView * flipX;
 
 	Renderer renderer(screenWidth, screenHeight);
+
+	//DebugUI_Register_Object(brickCube);
 
 	glEnable(GL_DEPTH_TEST);
 

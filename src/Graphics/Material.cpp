@@ -77,6 +77,22 @@ void Material::Apply(Shader* overrideShader)
 	}
 }
 
+void Material::UnbindTextures()
+{
+	for (auto& [key, value] : textureProperties)
+	{
+		const MaterialTextures& mt = value;
+		glActiveTexture(GL_TEXTURE0 + mt.slot);
+		value.tex->Unbind(); //Texture2D
+	}
+	for (auto& [key, value] : cubemapTextureProperties)
+	{
+		const MaterialTextures& mt = value;
+		glActiveTexture(GL_TEXTURE0 + mt.slot);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0); //Cubemap
+	}
+}
+
 
 //Shader property Setters
 void Material::SetFloat(const std::string& name, float v) { floatProperties[name] = v; }
