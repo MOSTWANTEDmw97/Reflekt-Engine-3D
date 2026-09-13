@@ -8,8 +8,8 @@
 class LightComponent : public Component
 {
 	public:
-		DiffLight light;
-		LightComponent(const DiffLight& l) : light(l) {}
+		Light light;	
+		LightComponent(const Light& l) : light(l) {}
 };
 
 #endif // !LIGHTCOMPONENT_H

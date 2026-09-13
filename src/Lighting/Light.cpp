@@ -2,12 +2,12 @@
 
 Light::Light(LightManager& mgr,
     const LightType type,
-    Transform& transform,
-    glm::vec3 direction,
+    const Transform& transform,
+    const glm::vec3 direction,
     const glm::vec3& ambient,
     const glm::vec3& diffuse,
     const glm::vec3& specular,
-    const float intensity,
+    float intensity,
     const glm::vec3& attenuation,
     const glm::vec2& cutoff)
     : manager(mgr), transform(transform)
@@ -16,7 +16,7 @@ Light::Light(LightManager& mgr,
     light.type = glm::ivec4(type, 0, 0, 0);
     light.position = glm::vec4(transform.position, 1.0f);
     light.direction = glm::vec4(direction, 0.0f);
-    light.ambient = glm::vec4(ambient, intensity);
+    light.ambientAndIntensity = glm::vec4(ambient, intensity);
     light.diffuse = glm::vec4(diffuse, intensity);
     light.specular = glm::vec4(specular, intensity);
     light.attenuation = glm::vec4(attenuation, 0.0f);
@@ -24,8 +24,8 @@ Light::Light(LightManager& mgr,
 
     manager.Add(light);
     index = (int)manager.lights.size() - 1;
-    manager.Upload();
-    manager.Bind();
+    //manager.Upload();
+    //manager.Bind();
 }
 
 void Light::SetPosition(const glm::vec3& pos)

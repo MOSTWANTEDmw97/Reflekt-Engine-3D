@@ -29,7 +29,7 @@ void main() {
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec3 gAlbedo;
-layout (location = 3) out vec3 gSpecular;
+layout (location = 3) out vec4 gSpecular;
 
 in VS_OUT {
     vec3 FragPos;
@@ -52,21 +52,6 @@ void main() {
     gNormal   = normalize(fs_in.Normal);
 
     gAlbedo = texture(material.diffuse, fs_in.TexCoords).rgb;
-    float depth = gl_FragCoord.z;
-
-// Convert to linear depth
-
-    // Visualize
-    //gAlbedo = vec3(linearDepth);
-    //gSpecular = texture(material.specular, fs_in.TexCoords).rgb;
-
-    //gAlbedo = vec3(1.0, 0.0, 0.0);
-    //gPosition = vec3(0.0);
-    //gNormal = vec3(0.0, 0.0, 1.0);
-    //gSpecular = vec3(0.0);
-
-    //FragColor = vec3(texture(gAlbedo, fs_in.TexCoords), 1.0);
-
-
+    gSpecular = vec4(texture(material.specular, fs_in.TexCoords).rgb, material.shininess);
 }
 

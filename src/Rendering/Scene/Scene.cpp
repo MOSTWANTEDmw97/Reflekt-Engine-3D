@@ -21,6 +21,7 @@ void Scene::CollectGeometry(float width, float height, Shader* overrideShader)
         {
             Shader* activeShader = overrideShader ? overrideShader : renderer->GetMaterial().shaderRef;
             activeCamera->BindToShader(*activeShader, obj.transform.GetModelMatrix(), width / height);
+			activeShader->SetVec3("viewPos", activeCamera->transform.position);
             pipeline.AddMeshRenderer(*renderer);
         }
     }
@@ -50,6 +51,9 @@ void Scene::UploadLights(Shader& lightingShader)
     for (auto obj : gameObjects)
     {
         if (auto lightComp = obj.GetComponent<LightComponent>())
-            lightComp->light.UploadToShader(lightingShader);
+        {
+            lightComp->light.manager.Upload();
+            lightComp->light.manager.Bind();
+        }
     }
 }

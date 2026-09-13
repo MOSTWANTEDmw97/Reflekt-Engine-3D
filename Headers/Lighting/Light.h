@@ -13,36 +13,28 @@ enum LightType
     spotLight = 2
 };
 
-struct DiffLight
-{
-    glm::vec3 position;
-    glm::vec3 color;
-
-    void UploadToShader(Shader& shader) const
-    {
-        shader.SetVec3("light.position", position);
-        shader.SetVec3("light.color", color);
-    }
-};
-
 class Light
 {   
     public:
         Transform transform;
+
+        LightManager& manager;
+
         Light(LightManager& mgr,
-            LightType type, // 0 = directional, 1 = point, 2 = spot
-            Transform& transform,
-            glm::vec3 direction,
-            const glm::vec3& ambient,
-            const glm::vec3& diffuse,
-            const glm::vec3& specular,
-            float intensity,
+            const LightType type, // 0 = directional, 1 = point, 2 = spot
+            const Transform& transform = Transform(glm::vec3(0.0f), glm::quat(1.0f, 0.0f, 0.0f, 0.0f), glm::vec3(1.0f)),
+            const glm::vec3 direction = glm::vec3(0.0f),
+            const glm::vec3& ambient = glm::vec3(0.2f),
+            const glm::vec3& diffuse = glm::vec3(0.5f),
+            const glm::vec3& specular = glm::vec3(1.0f),
+            float intensity = 1.0f,
             const glm::vec3& attenuation = glm::vec3(1.0f, 0.0f, 0.0f),
             const glm::vec2& cutoff = glm::vec2(0.0f, 0.0f));
 
         void SetPosition(const glm::vec3& pos);
         void SetDirection(const glm::vec3& dir);
         void SetColor(const glm::vec3& col, float intensity);
+		void SetIntensity(float intensity);
         void SetAttenuation(float constant, float linear, float quadratic);
         void SetCutoff(float inner, float outer);
 
@@ -54,7 +46,6 @@ class Light
             const glm::vec2& cutoff);
 
 private:
-    LightManager& manager;
     int index;
 };
 

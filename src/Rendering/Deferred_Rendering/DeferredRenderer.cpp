@@ -57,6 +57,8 @@ void DeferredRenderer::LightingPass(Scene& scene)
     glBindTexture(GL_TEXTURE_2D, gBuffer.gSpecular);
     lightingPassShader.SetInt("gSpecular", 3);
 
+
+	lightingPassShader.SetVec3("viewPos", scene.activeCamera->transform.position);
     scene.UploadLights(lightingPassShader);
 
     glDisable(GL_DEPTH_TEST);

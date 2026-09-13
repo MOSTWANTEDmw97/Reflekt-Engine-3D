@@ -217,7 +217,7 @@ int main()
 	Material iron(&shader);
 	iron.SetTexture("material.diffuse", &container_Diffuse, 0);
 	iron.SetTexture("material.specular", &container_Spec, 1);
-	iron.SetFloat("material.shininess", 32.0f);
+	iron.SetFloat("material.shininess", 128.0f);
 
 	// Leaf material
 	Material leafMaterial(&shader);
@@ -234,7 +234,7 @@ int main()
 	bagMat.SetTexture("material.diffuse", &bag_Diffuse, 0);
 	bagMat.SetTexture("material.specular", &bag_Specular, 1);
 	bagMat.SetFloat("material.shininess", 8.0f);
-
+	//
 	// Grass material (two variants)
 	Material grassMat(&shader);
 	grassMat.SetTexture("material.diffuse", &c_Grass, 0);
@@ -330,26 +330,35 @@ int main()
 	Transform tr(glm::vec3(1.0f));
 
 	glm::vec3 lDIr =
-		glm::vec3(0.0f, -0.5f, 0.5f);
+		glm::vec3(0.0f,  0.0f, 0.5f);
 
+	
 	Light dirLight(
 		lightManager,
 		LightType::directionalLight,
 		tr,
 		lDIr,
 		glm::vec3(0.25f),
-		glm::vec3(0.35f),
-		glm::vec3(1.0f),
-		0.2f,
-		glm::vec3(1.0f),
-		glm::vec2(1.0f)
+		glm::vec3(0.4f),
+		glm::vec3(1.25f),
+		0.25f
 	);
+
+	
+	Light pointLight(
+		lightManager,
+		LightType::pointLight,
+		lightTransform,
+		glm::vec3(0.0f, 3.0f, 0.0f),
+		glm::vec3(0.2f),
+		glm::vec3(0.5f),
+		glm::vec3(1.0f),
+		1.0f,
+		glm::vec3(1.0, 0.7, 0.034)
+	);
+	
 	ScreenQuad screenQuad;
 
-
-	DiffLight light;
-	light.position = glm::vec3(0.0f, 2.0f, -2.0f);
-	light.color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 
 
@@ -387,10 +396,14 @@ int main()
 	brickCube2.GetComponent<MeshRenderer>()->material = new Material(windowMat);
 	brickCube2.transform.position = glm::vec3(5.0f);
 	brickCube2.GetComponent<MeshRenderer>()->material->surfaceType = SurfaceType::Transparent;
+	brickCube2.GetComponent<MeshRenderer>()->material->blendMode = BlendMode::PreMultiply;
 
 
 	GameObject lightobj;
-	lightobj.AddComponent<LightComponent>(light);
+	//lightobj.AddComponent<LightComponent>(dirLight);
+
+	GameObject pointLightObj;
+	pointLightObj.AddComponent<LightComponent>(pointLight);
 
 	camera.skybox = &skybox;
 
@@ -404,12 +417,14 @@ int main()
 	windowObj1.AddComponent<MeshRenderer>(windowModel);
 	windowObj1.GetComponent<MeshRenderer>()->SetMaterial(windowMat);
 	windowObj1.transform.position = glm::vec3(4.0f);
+
 	Scene scene;
 	scene.SetCamera(&camera);
 	scene.AddGameObject(ironCube);
 	scene.AddGameObject(brickCube);
 	scene.AddGameObject(windowObj);
 	scene.AddGameObject(lightobj);
+	scene.AddGameObject(pointLightObj);
 	scene.AddGameObject(building);
 	scene.AddGameObject(ground);
 	scene.AddGameObject(windowObj1);
